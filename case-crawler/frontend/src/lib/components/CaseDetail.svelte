@@ -123,6 +123,7 @@
 <style>
 	.case-detail {
 		line-height: 1.7;
+		color: var(--color-text);
 	}
 
 	.detail-header {

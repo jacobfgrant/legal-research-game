@@ -73,6 +73,7 @@
 <style>
 	.statute-detail {
 		line-height: 1.7;
+		color: var(--color-text);
 	}
 
 	.detail-header {
@@ -109,6 +110,7 @@
 	.statute-text p {
 		margin-bottom: 0.6rem;
 		white-space: pre-line;
+		color: var(--color-text);
 	}
 
 	.citations-section {
