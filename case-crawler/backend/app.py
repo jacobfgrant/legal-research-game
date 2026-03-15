@@ -298,3 +298,138 @@ def create_session(body: SessionCreate, db: Session = Depends(get_db)):
     db.commit()
 
     return SessionResponse(session_id=session_id, scenario_id=body.scenario_id)
+
+
+@app.post("/api/sessions/{session_id}/submit")
+def submit_argument(
+    session_id: str,
+    body: ArgumentSubmission,
+    db: Session = Depends(get_db),
+):
+    """Submit a completed argument for scoring."""
+    from models import GameSession, SubmittedArgument
+
+    from scoring import score_argument
+
+    game_session = db.query(GameSession).filter_by(id=session_id).first()
+    if not game_session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    scenario = _scenarios.get(game_session.scenario_id)
+    if not scenario:
+        raise HTTPException(status_code=404, detail="Scenario not found")
+
+    # Score the argument
+    result = score_argument(
+        slot_assignments=[sa.model_dump() for sa in body.slot_assignments],
+        hours_remaining=body.hours_remaining,
+        scenario=scenario,
+    )
+
+    # Persist results
+    game_session.completed_at = datetime.now(timezone.utc)
+    game_session.hours_remaining = body.hours_remaining
+    game_session.score_total = result.total
+    game_session.score_relevance = result.relevance
+    game_session.score_strength = result.strength
+    game_session.score_completeness = result.completeness
+    game_session.score_efficiency = result.efficiency
+
+    for sa in body.slot_assignments:
+        db.add(SubmittedArgument(
+            session_id=session_id,
+            slot_id=sa.slot_id,
+            authority_id=sa.authority_id,
+            authority_type=sa.authority_type,
+        ))
+
+    db.commit()
+
+    # Build ruling text from grade
+    ruling_data = scenario.get("rulings", {}).get(result.grade, {})
+
+    return {
+        "score": {
+            "relevance": result.relevance,
+            "strength": result.strength,
+            "completeness": result.completeness,
+            "efficiency": result.efficiency,
+            "total": result.total,
+            "grade": result.grade,
+        },
+        "details": result.details,
+        "ruling": ruling_data,
+    }
+
+
+@app.get("/api/sessions/{session_id}/rebuttal")
+def get_rebuttal(session_id: str, db: Session = Depends(get_db)):
+    """Get opposition rebuttal for a completed session."""
+    from models import GameSession
+
+    game_session = db.query(GameSession).filter_by(id=session_id).first()
+    if not game_session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    rebuttal = _rebuttals.get(game_session.scenario_id)
+    if not rebuttal:
+        raise HTTPException(status_code=404, detail="Rebuttal not found")
+
+    # Don't leak the player_can_counter_with hints
+    return {
+        "opposing_counsel": rebuttal["opposing_counsel"],
+        "intro": rebuttal["intro"],
+        "arguments": [
+            {
+                "id": arg["id"],
+                "type": arg["type"],
+                "authority_id": arg["authority_id"],
+                "summary": arg["summary"],
+                "strength": arg["strength"],
+            }
+            for arg in rebuttal["arguments"]
+        ],
+        "closing": rebuttal["closing"],
+    }
+
+
+@app.get("/api/sessions/{session_id}/score")
+def get_score(session_id: str, db: Session = Depends(get_db)):
+    """Get score for a completed session."""
+    from models import GameSession
+
+    game_session = db.query(GameSession).filter_by(id=session_id).first()
+    if not game_session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    if game_session.score_total is None:
+        raise HTTPException(status_code=400, detail="Session not yet scored")
+
+    # Determine grade from total
+    total = game_session.score_total
+    if total >= 90:
+        grade = "A"
+    elif total >= 75:
+        grade = "B"
+    elif total >= 60:
+        grade = "C"
+    elif total >= 40:
+        grade = "D"
+    else:
+        grade = "F"
+
+    scenario = _scenarios.get(game_session.scenario_id, {})
+    ruling_data = scenario.get("rulings", {}).get(grade, {})
+
+    return {
+        "score": {
+            "relevance": game_session.score_relevance,
+            "strength": game_session.score_strength,
+            "completeness": game_session.score_completeness,
+            "efficiency": game_session.score_efficiency,
+            "total": game_session.score_total,
+            "grade": grade,
+        },
+        "ruling": ruling_data,
+        "hours_remaining": game_session.hours_remaining,
+    }
