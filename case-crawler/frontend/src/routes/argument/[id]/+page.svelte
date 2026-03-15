@@ -6,6 +6,7 @@
 		goToResearch, goToRebuttal, goToScore
 	} from '$lib/game-state.svelte.js';
 	import { getConfidence } from '$lib/scoring.js';
+	import GameGuard from '$lib/components/GameGuard.svelte';
 
 	let state = $derived(getState());
 
@@ -81,6 +82,7 @@
 	}
 </script>
 
+<GameGuard requiredPhases={['argument', 'research']}>
 {#if state.scenario}
 	<div class="container argument-builder">
 		<div class="builder-header">
@@ -189,6 +191,7 @@
 		<p>No scenario loaded. <a href="/">Return to home</a>.</p>
 	</div>
 {/if}
+</GameGuard>
 
 <style>
 	.argument-builder {

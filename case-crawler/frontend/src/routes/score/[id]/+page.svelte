@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { getState, resetGame } from '$lib/game-state.svelte.js';
 	import { formatHours } from '$lib/billable.js';
+	import GameGuard from '$lib/components/GameGuard.svelte';
 
 	let state = $derived(getState());
 
@@ -35,6 +36,7 @@
 	}
 </script>
 
+<GameGuard requiredPhases={['score']}>
 {#if score && ruling}
 	<div class="container score-page">
 		<div class="grade-display">
@@ -108,6 +110,7 @@
 		<p>No score data. <a href="/">Return to home</a>.</p>
 	</div>
 {/if}
+</GameGuard>
 
 <style>
 	.score-page {

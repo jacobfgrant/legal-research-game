@@ -5,6 +5,7 @@
 		getState, spendHours, collectAuthority, setCurrentDetail,
 		logSearch, goToArgument
 	} from '$lib/game-state.svelte.js';
+	import GameGuard from '$lib/components/GameGuard.svelte';
 	import CaseCard from '$lib/components/CaseCard.svelte';
 	import CaseDetail from '$lib/components/CaseDetail.svelte';
 	import StatuteDetail from '$lib/components/StatuteDetail.svelte';
@@ -89,6 +90,7 @@
 	}
 </script>
 
+<GameGuard requiredPhases={['research', 'argument']}>
 {#if state.scenario}
 	<div class="research-workspace">
 		<div class="left-panel">
@@ -228,6 +230,7 @@
 		<p>No scenario loaded. <a href="/">Return to home</a>.</p>
 	</div>
 {/if}
+</GameGuard>
 
 <style>
 	.research-workspace {

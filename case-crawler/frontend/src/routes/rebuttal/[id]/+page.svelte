@@ -1,6 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { getState } from '$lib/game-state.svelte.js';
+	import GameGuard from '$lib/components/GameGuard.svelte';
 
 	let state = $derived(getState());
 
@@ -20,6 +21,7 @@
 	}
 </script>
 
+<GameGuard requiredPhases={['rebuttal']}>
 {#if state.rebuttalData && state.scenario}
 	<div class="container rebuttal-page">
 		<div class="rebuttal-header">
@@ -70,6 +72,7 @@
 		<p>No rebuttal data. <a href="/">Return to home</a>.</p>
 	</div>
 {/if}
+</GameGuard>
 
 <style>
 	.rebuttal-page {
