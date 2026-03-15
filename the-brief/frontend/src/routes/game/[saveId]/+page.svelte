@@ -14,7 +14,6 @@
 
 	onMount(() => {
 		const saveId = page.params.saveId;
-		// Only load if we don't already have this game loaded
 		if (game.saveId !== saveId || !game.scene) {
 			loadExistingGame(saveId);
 		}
@@ -33,6 +32,9 @@
 				advanceDialogue();
 			}
 		}
+		if (e.key === 'Escape' && game.showResearch) {
+			toggleResearch();
+		}
 	}
 
 	function actColor(act: string): string {
@@ -47,24 +49,66 @@
 				return 'var(--color-accent)';
 		}
 	}
+
+	function actBg(act: string): string {
+		switch (act) {
+			case 'setup':
+				return 'rgba(201, 168, 76, 0.04)';
+			case 'research':
+				return 'rgba(92, 138, 175, 0.06)';
+			case 'outcome':
+				return 'rgba(175, 92, 122, 0.06)';
+			default:
+				return 'transparent';
+		}
+	}
+
+	function typeColor(type: string): string {
+		switch (type) {
+			case 'statute':
+				return 'var(--color-act-setup)';
+			case 'case':
+				return 'var(--color-act-research)';
+			case 'document':
+				return 'var(--color-act-outcome)';
+			default:
+				return 'var(--color-accent)';
+		}
+	}
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
 
+<!-- Chapter title card overlay -->
+{#if sceneState.showChapterTitle && game.scene}
+	<div class="chapter-title-card" in:fade={{ duration: 500 }} out:fade={{ duration: 500 }}>
+		<p class="chapter-label">Chapter</p>
+		<h1 class="chapter-name">{game.scene.chapter_title}</h1>
+	</div>
+{/if}
+
 {#if game.loading && !game.scene}
 	<div class="game-container">
-		<p class="loading" in:fade>Loading...</p>
+		<div class="loading-container" in:fade>
+			<p class="loading">Loading...</p>
+		</div>
 	</div>
-{:else if game.error}
+{:else if game.error && !game.scene}
 	<div class="game-container">
-		<p class="error" in:fade>{game.error}</p>
-		<a href="/" class="back-link">Back to menu</a>
+		<div class="error-container" in:fade>
+			<p class="error">{game.error}</p>
+			<a href="/" class="back-link">Back to menu</a>
+		</div>
 	</div>
 {:else if game.scene}
 	{@const scene = game.scene}
 	{@const accent = actColor(scene.act)}
 
-	<div class="game-container" style="--act-color: {accent}">
+	<div
+		class="game-container"
+		class:is-loading={game.loading}
+		style="--act-color: {accent}; background-color: {actBg(scene.act)}"
+	>
 		<!-- Top bar -->
 		<nav class="top-bar">
 			<a href="/" class="back-link">Menu</a>
@@ -85,7 +129,7 @@
 		<main class="scene" onclick={handleClick}>
 			{#key scene.id}
 				<div class="scene-content" in:fade={{ duration: 300, delay: 200 }} out:fade={{ duration: 200 }}>
-					<!-- Narrative text -->
+					<!-- Narrative text — always visible -->
 					{#if sceneState.dialogueIndex === null}
 						<div class="narrative">
 							{#each scene.text.split('\n\n') as paragraph}
@@ -96,7 +140,7 @@
 						</div>
 
 						{#if scene.dialogue?.length}
-							<p class="continue-hint" in:fade={{ delay: 600 }}>Click to continue</p>
+							<p class="continue-hint" in:fade={{ delay: 500 }}>Click to continue</p>
 						{/if}
 					{/if}
 
@@ -112,9 +156,7 @@
 							<p class="dialogue-line">"{line.line}"</p>
 						</div>
 
-						{#if sceneState.dialogueIndex < scene.dialogue.length - 1}
-							<p class="continue-hint" in:fade={{ delay: 400 }}>Click to continue</p>
-						{:else if !sceneState.showChoices}
+						{#if !sceneState.showChoices}
 							<p class="continue-hint" in:fade={{ delay: 400 }}>Click to continue</p>
 						{/if}
 					{/if}
@@ -134,20 +176,21 @@
 						</div>
 					{/if}
 
-					<!-- Chapter end -->
+					<!-- Chapter end (terminal scene) -->
 					{#if scene.terminal && sceneState.showChoices}
-						<div class="chapter-end" in:fade={{ delay: 600 }}>
+						<div class="chapter-end" in:fade={{ delay: 400 }}>
 							<p class="end-text">End of Chapter</p>
 							{#if scene.has_next_chapter}
 								<button
-									class="btn-continue"
+									class="btn-primary"
 									disabled={game.loading}
 									onclick={continueToNextChapter}
 								>
-									Continue
+									{game.loading ? 'Loading...' : 'Continue'}
 								</button>
 							{:else}
-								<a href="/" class="btn-menu">Return to Menu</a>
+								<p class="end-subtext">The story continues...</p>
+								<a href="/" class="btn-primary">Return to Menu</a>
 							{/if}
 						</div>
 					{/if}
@@ -157,6 +200,9 @@
 
 		<!-- Research sidebar -->
 		{#if game.showResearch}
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div class="research-backdrop" onclick={toggleResearch} transition:fade={{ duration: 200 }}></div>
 			<aside class="research-panel" transition:slide={{ axis: 'x', duration: 300 }}>
 				<div class="research-header">
 					<h2>Research</h2>
@@ -168,10 +214,12 @@
 					<ul class="research-list">
 						{#each game.research as item (item.id)}
 							<li class="research-item" in:fade>
-								<span class="item-type">{item.type}</span>
-								{#if item.jurisdiction}
-									<span class="item-jurisdiction">{item.jurisdiction}</span>
-								{/if}
+								<div class="item-meta">
+									<span class="item-type" style="color: {typeColor(item.type)}">{item.type}</span>
+									{#if item.jurisdiction}
+										<span class="item-jurisdiction">{item.jurisdiction}</span>
+									{/if}
+								</div>
 								<h3>{item.name}</h3>
 								<p>{item.description}</p>
 							</li>
@@ -189,6 +237,44 @@
 		display: flex;
 		flex-direction: column;
 		position: relative;
+		transition: background-color 0.6s ease;
+	}
+
+	.game-container.is-loading {
+		opacity: 0.7;
+		pointer-events: none;
+		transition: opacity 0.2s;
+	}
+
+	/* Chapter title card */
+	.chapter-title-card {
+		position: fixed;
+		inset: 0;
+		z-index: 200;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		background: var(--color-bg);
+		pointer-events: none;
+	}
+
+	.chapter-label {
+		font-family: var(--font-ui);
+		font-size: 0.85rem;
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+		color: var(--color-text-dim);
+		margin-bottom: 0.75rem;
+	}
+
+	.chapter-name {
+		font-family: var(--font-body);
+		font-size: 2.5rem;
+		font-weight: 400;
+		font-style: italic;
+		color: var(--color-accent);
+		letter-spacing: 0.03em;
 	}
 
 	/* Top bar */
@@ -293,7 +379,7 @@
 	.dialogue-line {
 		font-size: 1.25rem;
 		font-style: italic;
-		max-width: 600px;
+		max-width: min(600px, 90%);
 		margin: 0 auto;
 		line-height: 1.8;
 	}
@@ -351,7 +437,14 @@
 		margin-bottom: 1.5rem;
 	}
 
-	.btn-menu {
+	.end-subtext {
+		font-family: var(--font-body);
+		font-style: italic;
+		color: var(--color-text-dim);
+		margin-bottom: 1.5rem;
+	}
+
+	.btn-primary {
 		display: inline-block;
 		font-family: var(--font-ui);
 		font-size: 1rem;
@@ -363,33 +456,24 @@
 		transition: background 0.2s;
 	}
 
-	.btn-menu:hover {
+	.btn-primary:hover:not(:disabled) {
 		background: var(--color-accent-dim);
 		text-decoration: none;
 	}
 
-	.btn-continue {
-		display: inline-block;
-		font-family: var(--font-ui);
-		font-size: 1rem;
-		padding: 0.625rem 1.5rem;
-		background: var(--color-accent);
-		color: var(--color-bg);
-		border-radius: 4px;
-		font-weight: 600;
-		transition: background 0.2s;
-	}
-
-	.btn-continue:hover:not(:disabled) {
-		background: var(--color-accent-dim);
-	}
-
-	.btn-continue:disabled {
+	.btn-primary:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
 	}
 
 	/* Research sidebar */
+	.research-backdrop {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.4);
+		z-index: 99;
+	}
+
 	.research-panel {
 		position: fixed;
 		top: 0;
@@ -440,6 +524,10 @@
 		border-radius: 4px;
 	}
 
+	.item-meta {
+		margin-bottom: 0.5rem;
+	}
+
 	.research-item h3 {
 		font-family: var(--font-body);
 		font-size: 1rem;
@@ -458,7 +546,6 @@
 		font-size: 0.7rem;
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
-		color: var(--color-accent);
 		margin-right: 0.5rem;
 	}
 
@@ -475,14 +562,38 @@
 		font-size: 0.9rem;
 	}
 
-	.loading,
-	.error {
-		text-align: center;
+	.loading-container,
+	.error-container {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
 		padding: 3rem;
 		font-family: var(--font-ui);
 	}
 
+	.loading {
+		color: var(--color-text-dim);
+	}
+
 	.error {
 		color: var(--color-error);
+	}
+
+	/* Mobile */
+	@media (max-width: 600px) {
+		.scene {
+			padding: 2rem 1rem;
+		}
+
+		.chapter-name {
+			font-size: 1.75rem;
+		}
+
+		.dialogue-line {
+			font-size: 1.1rem;
+		}
 	}
 </style>

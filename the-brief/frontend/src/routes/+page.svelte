@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { startNewGame } from '$lib/game.svelte';
+	import { fade } from 'svelte/transition';
+	import { game, startNewGame } from '$lib/game.svelte';
 	import * as api from '$lib/api';
 	import type { SaveSummary } from '$lib/types';
 
 	let saves = $state<SaveSummary[]>([]);
 	let loading = $state(true);
+	let starting = $state(false);
 	let error = $state<string | null>(null);
 
 	onMount(async () => {
@@ -18,7 +20,14 @@
 		}
 	});
 
+	async function handleNewGame() {
+		starting = true;
+		await startNewGame();
+		starting = false;
+	}
+
 	async function handleDelete(saveId: string) {
+		if (!confirm('Delete this save? This cannot be undone.')) return;
 		try {
 			await api.deleteSave(saveId);
 			saves = saves.filter((s) => s.save_id !== saveId);
@@ -37,14 +46,16 @@
 	}
 </script>
 
-<div class="menu">
+<div class="menu" in:fade>
 	<header>
 		<h1>The Brief</h1>
 		<p class="subtitle">A Legal Research Game</p>
 	</header>
 
 	<div class="actions">
-		<button class="btn-primary" onclick={startNewGame}>New Game</button>
+		<button class="btn-primary" onclick={handleNewGame} disabled={starting}>
+			{starting ? 'Starting...' : 'New Game'}
+		</button>
 	</div>
 
 	{#if error}
@@ -58,10 +69,9 @@
 			<h2>Continue</h2>
 			<ul>
 				{#each saves as save (save.save_id)}
-					<li>
+					<li in:fade>
 						<a href="/game/{save.save_id}" class="save-link">
-							<span class="save-chapter">{save.current_chapter}</span>
-							<span class="save-scene">{save.current_scene}</span>
+							<span class="save-chapter">{save.chapter_title || save.current_chapter}</span>
 							<span class="save-date">{formatDate(save.updated_at)}</span>
 						</a>
 						<button class="btn-delete" onclick={() => handleDelete(save.save_id)}>
@@ -125,8 +135,13 @@
 		transition: background 0.2s;
 	}
 
-	.btn-primary:hover {
+	.btn-primary:hover:not(:disabled) {
 		background: var(--color-accent-dim);
+	}
+
+	.btn-primary:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
 	}
 
 	.saves {
@@ -158,19 +173,13 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		gap: 0.15rem;
+		gap: 0.25rem;
 	}
 
 	.save-chapter {
 		font-family: var(--font-ui);
-		font-size: 0.9rem;
+		font-size: 0.95rem;
 		color: var(--color-text);
-	}
-
-	.save-scene {
-		font-family: var(--font-ui);
-		font-size: 0.8rem;
-		color: var(--color-text-dim);
 	}
 
 	.save-date {
@@ -198,5 +207,11 @@
 
 	.dim {
 		color: var(--color-text-dim);
+	}
+
+	@media (max-width: 600px) {
+		h1 {
+			font-size: 2.25rem;
+		}
 	}
 </style>

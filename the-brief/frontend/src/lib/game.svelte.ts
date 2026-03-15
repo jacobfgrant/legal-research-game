@@ -14,24 +14,42 @@ export const game = $state({
 export const sceneState = $state({
 	/** Which dialogue line we're currently showing (null = showing narrative text) */
 	dialogueIndex: null as number | null,
-	/** Whether all text has been revealed (for typewriter effect) */
-	textRevealed: false,
-	/** Whether choices are visible */
+	/** Whether the player has finished interacting with the scene */
 	showChoices: false,
+	/** Whether to show a chapter title card */
+	showChapterTitle: false,
+	/** The chapter title being displayed */
+	chapterTitleText: '',
+	/** Track current chapter to detect transitions */
+	currentChapter: '',
 });
 
 function resetSceneState() {
 	sceneState.dialogueIndex = null;
-	sceneState.textRevealed = false;
 	sceneState.showChoices = false;
 }
 
 function onSceneLoaded() {
 	resetSceneState();
-	// If scene has dialogue, start at narrative text (dialogueIndex = null)
-	// Player clicks to advance through dialogue, then sees choices
-	// If no dialogue, reveal choices after text
-	if (!game.scene?.dialogue?.length) {
+
+	const scene = game.scene;
+	if (!scene) return;
+
+	// Detect chapter transition — show title card
+	if (scene.chapter_title && scene.chapter_title !== sceneState.chapterTitleText) {
+		sceneState.chapterTitleText = scene.chapter_title;
+		if (sceneState.currentChapter && sceneState.currentChapter !== scene.chapter_title) {
+			// Chapter changed mid-session — show title card
+			sceneState.showChapterTitle = true;
+			setTimeout(() => {
+				sceneState.showChapterTitle = false;
+			}, 2500);
+		}
+		sceneState.currentChapter = scene.chapter_title;
+	}
+
+	// If no dialogue, show choices/terminal state immediately
+	if (!scene.dialogue?.length) {
 		sceneState.showChoices = true;
 	}
 }
@@ -44,7 +62,14 @@ export async function startNewGame() {
 		game.saveId = resp.save_id;
 		game.scene = resp.scene;
 		game.research = [];
+		// Show title card for first chapter
+		sceneState.currentChapter = '';
+		sceneState.chapterTitleText = '';
 		onSceneLoaded();
+		sceneState.showChapterTitle = true;
+		setTimeout(() => {
+			sceneState.showChapterTitle = false;
+		}, 2500);
 		goto(`/game/${resp.save_id}`);
 	} catch (e) {
 		game.error = e instanceof Error ? e.message : 'Failed to start game';
@@ -64,6 +89,9 @@ export async function loadExistingGame(saveId: string) {
 		]);
 		game.scene = scene;
 		game.research = research;
+		// Don't show title card on load — player is resuming
+		sceneState.currentChapter = scene.chapter_title;
+		sceneState.chapterTitleText = scene.chapter_title;
 		onSceneLoaded();
 	} catch (e) {
 		game.error = e instanceof Error ? e.message : 'Failed to load game';
@@ -79,7 +107,6 @@ export async function chooseOption(choiceIndex: number) {
 	try {
 		const scene = await api.makeChoice(game.saveId, choiceIndex);
 		game.scene = scene;
-		// Refresh research items
 		game.research = await api.getResearch(game.saveId);
 		onSceneLoaded();
 	} catch (e) {
@@ -93,13 +120,10 @@ export function advanceDialogue() {
 	if (!game.scene?.dialogue) return;
 
 	if (sceneState.dialogueIndex === null) {
-		// Move from narrative text to first dialogue line
 		sceneState.dialogueIndex = 0;
 	} else if (sceneState.dialogueIndex < game.scene.dialogue.length - 1) {
-		// Advance to next dialogue line
 		sceneState.dialogueIndex++;
 	} else {
-		// All dialogue shown — reveal choices
 		sceneState.showChoices = true;
 	}
 }

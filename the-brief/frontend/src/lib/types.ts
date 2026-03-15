@@ -22,6 +22,7 @@ export interface ResolvedScene {
 	character_info: Record<string, CharacterInfo>;
 	terminal: boolean;
 	has_next_chapter: boolean;
+	chapter_title: string;
 }
 
 export interface ResearchItem {
@@ -45,6 +46,7 @@ export interface SaveSummary {
 	save_id: string;
 	current_chapter: string;
 	current_scene: string;
+	chapter_title: string;
 	updated_at: string;
 }
 

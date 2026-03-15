@@ -140,6 +140,7 @@ class StoryEngine:
             character_info=char_info,
             terminal=terminal,
             has_next_chapter=has_next,
+            chapter_title=chapter.title,
         )
 
     def make_choice(self, state: GameState, choice_index: int) -> GameState:

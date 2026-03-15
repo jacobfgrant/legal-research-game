@@ -163,8 +163,13 @@ async def get_research(save_id: str) -> list[ResearchItem]:
 
 @app.get("/api/saves")
 async def list_saves() -> list[SaveSummary]:
-    """List all game saves."""
-    return db.list_saves()
+    """List all game saves with chapter titles."""
+    saves = db.list_saves()
+    for save in saves:
+        chapter = engine.get_chapter(save.current_chapter)
+        if chapter:
+            save.chapter_title = chapter.title
+    return saves
 
 
 @app.delete("/api/game/{save_id}")

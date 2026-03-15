@@ -64,3 +64,13 @@ button {
 	color: inherit;
 	font-size: inherit;
 }
+
+@media (max-width: 600px) {
+	:root {
+		--spacing: 1rem;
+	}
+
+	body {
+		font-size: 1rem;
+	}
+}

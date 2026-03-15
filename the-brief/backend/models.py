@@ -119,6 +119,7 @@ class ResolvedScene(BaseModel):
     character_info: dict[str, CharacterInfo] = Field(default_factory=dict)
     terminal: bool = False
     has_next_chapter: bool = False
+    chapter_title: str = ""
 
 
 class ResolvedChoice(BaseModel):
@@ -141,6 +142,7 @@ class SaveSummary(BaseModel):
     save_id: str
     current_chapter: str
     current_scene: str
+    chapter_title: str = ""
     updated_at: str
 
 

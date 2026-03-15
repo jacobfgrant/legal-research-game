@@ -3,30 +3,44 @@ import type {
 	ResolvedScene,
 	ResearchItem,
 	SaveSummary,
-	GameState,
 	ChapterSummary,
 } from './types';
 
 const BASE = '/api';
+const TIMEOUT_MS = 10_000;
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-	const resp = await fetch(`${BASE}${path}`, {
-		headers: { 'Content-Type': 'application/json' },
-		...options,
-	});
-	if (!resp.ok) {
-		const detail = await resp.text();
-		throw new Error(`API error ${resp.status}: ${detail}`);
+	const controller = new AbortController();
+	const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+	try {
+		const resp = await fetch(`${BASE}${path}`, {
+			headers: { 'Content-Type': 'application/json' },
+			signal: controller.signal,
+			...options,
+		});
+		if (!resp.ok) {
+			let detail: string;
+			try {
+				detail = await resp.text();
+			} catch {
+				detail = `HTTP ${resp.status}`;
+			}
+			throw new Error(detail);
+		}
+		return resp.json();
+	} catch (e) {
+		if (e instanceof DOMException && e.name === 'AbortError') {
+			throw new Error('Request timed out');
+		}
+		throw e;
+	} finally {
+		clearTimeout(timeout);
 	}
-	return resp.json();
 }
 
 export async function createGame(): Promise<NewGameResponse> {
 	return request('/game/new', { method: 'POST' });
-}
-
-export async function loadGame(saveId: string): Promise<GameState> {
-	return request(`/game/${saveId}`);
 }
 
 export async function getScene(saveId: string): Promise<ResolvedScene> {
