@@ -22,7 +22,7 @@
     {
       "id": "rebuttal_03",
       "type": "distinguish",
-      "target_authority_id": "case_01",
+      "authority_id": "case_01",
       "summary": "Opposing counsel relies heavily on Palmer v. Whitfield Industries, but Palmer is distinguishable. Palmer had no access to client information whatsoever — she was a purely internal engineer. Ms. Reeves, by contrast, worked directly with client data sets and had knowledge of DataFlow's client relationships and project scopes. Palmer's holding is limited to employees with no client-facing exposure.",
       "strength": "moderate",
       "player_can_counter_with": ["case_10", "case_04"]

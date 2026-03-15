@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from database import Base, SessionLocal, engine
+from models import GameSession, SubmittedArgument, SearchLog  # noqa: F401
 
 # ---------------------------------------------------------------------------
 # Data loading
@@ -289,9 +290,6 @@ def create_session(body: SessionCreate, db: Session = Depends(get_db)):
     if body.scenario_id not in _scenarios:
         raise HTTPException(status_code=404, detail="Scenario not found")
 
-    # Import here to avoid circular import at module level
-    from models import GameSession
-
     session_id = str(uuid.uuid4())
     game_session = GameSession(id=session_id, scenario_id=body.scenario_id)
     db.add(game_session)
@@ -307,8 +305,6 @@ def submit_argument(
     db: Session = Depends(get_db),
 ):
     """Submit a completed argument for scoring."""
-    from models import GameSession, SubmittedArgument
-
     from scoring import score_argument
 
     game_session = db.query(GameSession).filter_by(id=session_id).first()
@@ -365,8 +361,6 @@ def submit_argument(
 @app.get("/api/sessions/{session_id}/rebuttal")
 def get_rebuttal(session_id: str, db: Session = Depends(get_db)):
     """Get opposition rebuttal for a completed session."""
-    from models import GameSession
-
     game_session = db.query(GameSession).filter_by(id=session_id).first()
     if not game_session:
         raise HTTPException(status_code=404, detail="Session not found")
@@ -396,8 +390,6 @@ def get_rebuttal(session_id: str, db: Session = Depends(get_db)):
 @app.get("/api/sessions/{session_id}/score")
 def get_score(session_id: str, db: Session = Depends(get_db)):
     """Get score for a completed session."""
-    from models import GameSession
-
     game_session = db.query(GameSession).filter_by(id=session_id).first()
     if not game_session:
         raise HTTPException(status_code=404, detail="Session not found")
