@@ -1,0 +1,392 @@
+id: chapter-01
+title: "The Midnight Memo"
+description: "A breach of contract dispute lands on your desk at 11 PM."
+characters: [margaret, player, opposing_counsel, judge]
+
+research_items:
+  ucc_section_2:
+    name: "UCC Article 2, Section 2-201"
+    description: >
+      The Statute of Frauds provision of the Uniform Commercial Code.
+      Requires a writing sufficient to indicate a contract for goods
+      over $500 — signed by the party against whom enforcement is sought.
+    type: statute
+
+  baker_v_telecom:
+    name: "Baker v. Consolidated Telecom (2019)"
+    description: >
+      Held that email confirmations between merchants constitute a
+      writing signed by the party, where both parties typed their
+      full names at the bottom of the emails.
+    type: case
+    jurisdiction: binding
+
+  chen_v_apex:
+    name: "Chen v. Apex Industries (2021)"
+    description: >
+      Distinguished Baker. Held that automated email signature blocks
+      do not satisfy the UCC's signing requirement — a party must
+      personally type or affix their name with intent to authenticate.
+    type: case
+    jurisdiction: binding
+
+  martinez_v_global:
+    name: "Martinez v. Global Supply (2018)"
+    description: >
+      Applied the merchant's exception to the Statute of Frauds broadly,
+      holding that informal communications between merchants can satisfy
+      the confirmation requirement under UCC 2-201(2).
+    type: case
+    jurisdiction: persuasive
+
+start_scene: late_night_office
+
+scenes:
+
+  # =========================================
+  # ACT 1: SETUP
+  # =========================================
+
+  late_night_office:
+    act: setup
+    text: |
+      It's 11:14 PM on a Tuesday. The office is empty except for you
+      and the cleaning crew. Your laptop screen is the brightest light
+      on the floor. You're about to close it when your phone buzzes.
+    dialogue:
+      - character: margaret
+        line: "I need you in my office. Now."
+      - character: margaret
+        line: >
+          Hartfield Industries. Breach of contract. They're our client —
+          the defendant. Opposing counsel filed a motion for summary
+          judgment this morning. I need a research memo by 7 AM.
+      - character: margaret
+        line: >
+          The contract was oral. They're claiming it's enforceable because
+          of a series of emails confirming the deal. Our position is that
+          the Statute of Frauds bars enforcement. Find me the law.
+    choices:
+      - label: "Ask Margaret for more details about the emails"
+        target: margaret_details
+        consequences:
+          relationship.margaret: 1
+      - label: "Head straight to the library and start researching"
+        target: research_start
+        consequences:
+          flags.skipped_briefing: true
+
+  margaret_details:
+    act: setup
+    text: |
+      Margaret slides a thin folder across her desk.
+    dialogue:
+      - character: margaret
+        line: >
+          There are six emails. Three from our client's sales rep, three
+          from the buyer. They discuss quantity, price, and delivery
+          dates. No one ever signed anything.
+      - character: margaret
+        line: >
+          Opposing counsel is arguing the emails satisfy the writing
+          requirement. I think they're wrong, but I need you to find
+          me the authority.
+    choices:
+      - label: "Begin your research"
+        target: research_start
+
+  # =========================================
+  # ACT 2: RESEARCH
+  # =========================================
+
+  research_start:
+    act: research
+    text: |
+      You settle into the library. The clock reads 11:42 PM. You have
+      roughly seven hours. Where do you begin?
+    choices:
+      - label: "Start with the statute — look up the UCC Statute of Frauds"
+        target: ucc_research
+        consequences:
+          research_found: [ucc_section_2]
+      - label: "Start with case law — search for recent decisions on email contracts"
+        target: case_law_search
+      - label: "Start by reading opposing counsel's motion to understand their argument"
+        target: read_motion
+
+  ucc_research:
+    act: research
+    text: |
+      You pull up UCC Section 2-201. The Statute of Frauds requires a
+      "writing sufficient to indicate that a contract has been made" for
+      sales of goods over $500. The question is whether emails count as
+      a "writing" and whether the sales rep's emails count as "signed."
+    choices:
+      - label: "Look for cases interpreting 'writing' to include emails"
+        target: email_writing_cases
+      - label: "Focus on the merchant's exception — maybe there's an angle there"
+        target: merchants_exception
+
+  case_law_search:
+    act: research
+    text: |
+      You run a search for recent cases on email correspondence and the
+      Statute of Frauds. Several results come up. Two look promising.
+    choices:
+      - label: "Read Baker v. Consolidated Telecom (2019) — binding precedent"
+        target: baker_case
+        consequences:
+          research_found: [baker_v_telecom]
+      - label: "Read Martinez v. Global Supply (2018) — persuasive authority from another jurisdiction"
+        target: martinez_case
+        consequences:
+          research_found: [martinez_v_global]
+
+  read_motion:
+    act: research
+    text: |
+      You read opposing counsel's motion carefully. Roth cites Baker v.
+      Consolidated Telecom for the proposition that email confirmations
+      constitute a writing under UCC 2-201. His argument is clean and
+      well-structured.
+    dialogue:
+      - character: player
+        line: >
+          If Baker says emails count, I need to either distinguish it
+          or find something that limits it...
+    choices:
+      - label: "Look for cases that distinguish or limit Baker"
+        target: distinguish_baker
+        consequences:
+          research_found: [baker_v_telecom]
+          flags.read_opposition: true
+      - label: "Look for a different angle entirely — maybe the merchant's exception"
+        target: merchants_exception
+        consequences:
+          flags.read_opposition: true
+
+  baker_case:
+    act: research
+    text: |
+      Baker v. Consolidated Telecom (2019). The court held that email
+      confirmations between two merchants constituted a "writing signed
+      by the party against whom enforcement is sought" under UCC 2-201.
+      The key fact: both parties had typed their full names at the bottom
+      of the emails.
+
+      This is bad for your client. But you notice something — in Baker,
+      both parties typed their names. What about your case?
+    choices:
+      - label: "Check whether your client's emails were signed — this could be the distinction"
+        target: distinguish_baker
+      - label: "Look for a case that overrules or limits Baker"
+        target: chen_case_discovery
+
+  distinguish_baker:
+    act: research
+    text: |
+      You go back to the folder Margaret gave you. You read the emails
+      carefully. The sales rep's emails end with an automated signature
+      block — name, title, company — generated by the email system.
+      The rep never typed their name manually.
+    conditions:
+      - if: "flags.read_opposition"
+        text_append: |
+          Having read Roth's motion first, you know exactly what he's
+          relying on. The distinction is clearer in your mind.
+    choices:
+      - label: "Search for cases on automated vs. manual email signatures"
+        target: chen_case_discovery
+        consequences:
+          research_found: [chen_v_apex]
+          flags.found_distinction: true
+      - label: "This distinction might not hold up — look for a stronger argument"
+        target: merchants_exception
+
+  chen_case_discovery:
+    act: research
+    text: |
+      You find it. Chen v. Apex Industries (2021). The court
+      distinguished Baker on exactly the point you identified:
+      automated email signatures are not the same as a party "signing"
+      a writing. The court held that an auto-generated signature block
+      does not satisfy the UCC's signing requirement.
+
+      This is your case. This is the one that changes everything.
+    conditions:
+      - if: "flags.found_distinction"
+        text_append: |
+          And you found it the right way — by identifying the factual
+          distinction first and then finding the authority that supports
+          it. That's how the best research works.
+    consequences:
+      research_found: [chen_v_apex]
+    choices:
+      - label: "Build your memo around Chen v. Apex"
+        target: strong_memo
+        consequences:
+          flags.strong_argument: true
+
+  merchants_exception:
+    act: research
+    text: |
+      You look into the merchant's exception to the Statute of Frauds.
+      Under UCC 2-201(2), if both parties are merchants and one sends a
+      written confirmation, the other has 10 days to object or the
+      contract becomes enforceable.
+    choices:
+      - label: "Find cases applying the merchant's exception"
+        target: martinez_case
+        consequences:
+          research_found: [martinez_v_global]
+      - label: "Go back to the main email signature argument"
+        target: email_writing_cases
+
+  email_writing_cases:
+    act: research
+    text: |
+      You find several cases. The law is split. Some courts say emails
+      are writings. Some say it depends on the context. None of them
+      give you a clean win.
+    choices:
+      - label: "Dig deeper — there has to be something more specific"
+        target: chen_case_discovery
+      - label: "Work with what you have and write the memo"
+        target: adequate_memo
+        consequences:
+          flags.adequate_argument: true
+
+  martinez_case:
+    act: research
+    text: |
+      Martinez v. Global Supply (2018) is from the Ninth Circuit — not
+      binding in your jurisdiction, but persuasive. The court applied
+      the merchant's exception broadly, holding that even informal
+      communications between merchants could satisfy the confirmation
+      requirement.
+
+      It's a helpful case, but you're not sure Judge Alvarez will give
+      much weight to out-of-circuit authority.
+    choices:
+      - label: "Use Martinez as supporting authority and write the memo"
+        target: adequate_memo
+        consequences:
+          flags.adequate_argument: true
+          flags.used_persuasive: true
+      - label: "Keep looking for binding precedent"
+        target: chen_case_discovery
+
+  # =========================================
+  # ACT 3: OUTCOMES
+  # =========================================
+
+  strong_memo:
+    act: outcome
+    text: |
+      You finish the memo at 5:47 AM. It's tight. Chen v. Apex is your
+      centerpiece — a binding case that distinguishes Baker on the exact
+      facts of your case. You walk Margaret through it at 6:30.
+    dialogue:
+      - character: margaret
+        line: "Chen v. Apex. I haven't seen this one."
+      - character: margaret
+        line: "This is exactly what I needed. Good work."
+    choices:
+      - label: "Continue to the hearing"
+        target: hearing_strong
+
+  adequate_memo:
+    act: outcome
+    text: |
+      You finish the memo at 4:30 AM. It makes a reasonable argument,
+      but you don't have a knockout case. Your authorities are either
+      from other jurisdictions or don't quite match your facts.
+    dialogue:
+      - character: margaret
+        line: "This is... fine. It's a defensible position."
+      - character: margaret
+        line: "I was hoping for something stronger. But we'll work with it."
+    consequences:
+      relationship.margaret: -1
+    choices:
+      - label: "Continue to the hearing"
+        target: hearing_adequate
+
+  hearing_strong:
+    act: outcome
+    text: |
+      The hearing room is small and quiet. Judge Alvarez reviews the
+      briefs while opposing counsel shifts in his chair. When it's
+      Margaret's turn, she presents your argument. The Chen case lands
+      exactly as you hoped.
+    dialogue:
+      - character: judge
+        line: >
+          Counsel, I've read Chen v. Apex Industries. I find the
+          distinction between automated and manual signatures
+          persuasive. The emails here do not satisfy the writing
+          requirement under Section 2-201.
+      - character: judge
+        line: "Motion for summary judgment is denied."
+      - character: opposing_counsel
+        line: "Where did they find that case?"
+    consequences:
+      relationship.margaret: 2
+      career.reputation: 2
+      flags.chapter_01_strong_win: true
+    choices:
+      - label: "Continue"
+        target: chapter_end_strong
+
+  hearing_adequate:
+    act: outcome
+    text: |
+      The hearing goes... okay. Margaret argues your position
+      competently, but Judge Alvarez pushes back.
+    conditions:
+      - if: "flags.used_persuasive"
+        dialogue_append:
+          - character: judge
+            line: "Counsel, Martinez is Ninth Circuit. Do you have anything binding?"
+          - character: margaret
+            line: >
+              Your Honor, while Martinez is persuasive authority,
+              the reasoning is directly applicable —
+          - character: judge
+            line: "I'll take it under advisement."
+    dialogue:
+      - character: judge
+        line: >
+          I'm going to take this under advisement. I'll issue a
+          ruling by end of week.
+    consequences:
+      career.reputation: 0
+      flags.chapter_01_adequate: true
+    choices:
+      - label: "Continue"
+        target: chapter_end_adequate
+
+  # --- Terminal scenes (no choices = chapter end) ---
+
+  chapter_end_strong:
+    act: outcome
+    text: |
+      Walking back to the office, Margaret turns to you.
+    dialogue:
+      - character: margaret
+        line: >
+          I have a case coming up. Complex commercial dispute.
+          Interested?
+    consequences:
+      flags.chapter_01_complete: true
+      flags.margaret_trust: true
+
+  chapter_end_adequate:
+    act: outcome
+    text: |
+      Back at the office, Margaret nods at you in the hallway but
+      doesn't stop to talk. Your phone buzzes with a new assignment
+      from a different partner — a smaller matter. Routine work.
+    consequences:
+      flags.chapter_01_complete: true
+      flags.margaret_neutral: true

@@ -1,0 +1,8 @@
+title: "The Brief"
+version: "0.1.0"
+chapters:
+  - id: chapter-01
+    file: chapter-01.yml
+    title: "The Midnight Memo"
+    description: "A breach of contract dispute lands on your desk at 11 PM."
+    unlocked_by: null

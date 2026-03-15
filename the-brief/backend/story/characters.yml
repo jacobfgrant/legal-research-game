@@ -1,0 +1,27 @@
+characters:
+  margaret:
+    name: "Margaret Chen"
+    title: "Senior Partner"
+    description: >
+      Tough but fair. Twenty years of commercial litigation.
+      She doesn't suffer fools, but she invests in people who show promise.
+
+  player:
+    name: "You"
+    title: "Junior Associate"
+    description: >
+      First year at Hartwell & Associates. Everything to prove.
+
+  opposing_counsel:
+    name: "David Roth"
+    title: "Partner, Sterling & Roth"
+    description: >
+      Experienced, aggressive, and well-prepared.
+      He's won more motions than you've filed.
+
+  judge:
+    name: "Judge Patricia Alvarez"
+    title: "Superior Court Judge"
+    description: >
+      Known for demanding thorough briefing.
+      She reads every case you cite.
