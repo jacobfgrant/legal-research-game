@@ -2,8 +2,13 @@ services:
   caddy:
     image: caddy:2
     ports:
-      - "8080:8080"  # Case Crawler
-      - "8081:8081"  # The Brief
+      - "8080:8080"  # Case Crawler (local dev)
+      - "8081:8081"  # The Brief (local dev)
+      - "80:80"      # HTTP (production)
+      - "443:443"    # HTTPS (production)
+    environment:
+      - CASE_CRAWLER_DOMAIN=${CASE_CRAWLER_DOMAIN:-}
+      - THE_BRIEF_DOMAIN=${THE_BRIEF_DOMAIN:-}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
