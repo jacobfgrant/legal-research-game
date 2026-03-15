@@ -11,10 +11,19 @@
 
 	let state = $derived(getState());
 
+	const phaseRoutes = {
+		briefing: 'scenario',
+		research: 'research',
+		argument: 'argument',
+		rebuttal: 'rebuttal',
+		score: 'score',
+	};
+
 	// If there's an active game, redirect to the right phase
 	$effect(() => {
 		if (state.gamePhase !== 'select' && state.scenario) {
-			goto(`/${state.gamePhase}/${state.scenario.id}`);
+			const route = phaseRoutes[state.gamePhase] || state.gamePhase;
+			goto(`/${route}/${state.scenario.id}`);
 		}
 	});
 
