@@ -1,0 +1,32 @@
+{
+  "scenario_id": "non-compete",
+  "opposing_counsel": "Robert Hargrove",
+  "intro": "Counsel for DataFlow Analytics rises to respond.",
+  "arguments": [
+    {
+      "id": "rebuttal_01",
+      "type": "cite_case",
+      "authority_id": "case_07",
+      "summary": "In Blackwell v. Orion Systems, this very court upheld a non-compete with identical terms — 50 miles, 18 months — where the employee had access to client lists and project pricing. Ms. Reeves, like Ms. Blackwell, had access to DataFlow's client information. The restriction here is well within the bounds this court has found reasonable.",
+      "strength": "strong",
+      "player_can_counter_with": ["case_01", "case_04", "case_10"]
+    },
+    {
+      "id": "rebuttal_02",
+      "type": "cite_case",
+      "authority_id": "case_03",
+      "summary": "Monroe v. TechStar Corp. established that employees with access to sensitive competitive intelligence pose an inherent risk to their former employers. Ms. Reeves spent four years immersed in DataFlow's methods, tools, and client strategies. That knowledge doesn't disappear because she claims to be targeting a different industry.",
+      "strength": "moderate",
+      "player_can_counter_with": ["case_04", "case_09"]
+    },
+    {
+      "id": "rebuttal_03",
+      "type": "distinguish",
+      "target_authority_id": "case_01",
+      "summary": "Opposing counsel relies heavily on Palmer v. Whitfield Industries, but Palmer is distinguishable. Palmer had no access to client information whatsoever — she was a purely internal engineer. Ms. Reeves, by contrast, worked directly with client data sets and had knowledge of DataFlow's client relationships and project scopes. Palmer's holding is limited to employees with no client-facing exposure.",
+      "strength": "moderate",
+      "player_can_counter_with": ["case_10", "case_04"]
+    }
+  ],
+  "closing": "DataFlow invested four years in Ms. Reeves's professional development. She signed the non-compete freely and with full knowledge of its terms. The restriction is reasonable, the business interest is legitimate, and the court should enforce the agreement as written. We respectfully request that the motion to dismiss be denied and the preliminary injunction granted."
+}

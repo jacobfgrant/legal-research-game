@@ -1,0 +1,209 @@
+{
+  "id": "non-compete",
+  "title": "The Non-Compete Clause",
+  "difficulty": "beginner",
+  "jurisdiction": "State of Franklin",
+  "court": "Franklin Superior Court",
+  "client_side": "defendant",
+  "assignment": {
+    "partner_name": "Margaret Chen",
+    "client_name": "Sarah Reeves",
+    "fact_pattern": "Your client, Sarah Reeves, worked as a senior data scientist at DataFlow Analytics for four years. When she was hired, she signed a non-compete agreement prohibiting her from working for any \"competing business\" within 50 miles for 18 months after leaving. Three months ago, she resigned and launched her own data consulting firm, Reeves Analytics, operating from the same city. DataFlow has filed suit to enforce the non-compete and is seeking a preliminary injunction to shut down her business.\n\nKey facts: Sarah had access to some client lists but no trade secrets or proprietary algorithms. Her new firm focuses on healthcare analytics — DataFlow works primarily in financial services. The 50-mile radius covers the entire metropolitan area, effectively preventing her from working in her field anywhere nearby. DataFlow has not lost any clients to Reeves Analytics.\n\nPartner Chen wants a memo arguing the non-compete is unenforceable.",
+    "legal_issue": "Is the non-compete agreement enforceable against Sarah Reeves?",
+    "your_position": "The non-compete is unreasonably broad and unenforceable."
+  },
+  "billable_hours": 12.0,
+  "costs": {
+    "search": 0.5,
+    "read_case": 0.75,
+    "read_statute": 0.5,
+    "follow_citation": 0.25
+  },
+  "argument_slots": [
+    {
+      "slot_id": "foundation",
+      "label": "Controlling Statute or Rule",
+      "description": "The statute that governs non-compete enforceability in Franklin.",
+      "type": "statute",
+      "required": true
+    },
+    {
+      "slot_id": "binding_precedent",
+      "label": "Binding Precedent",
+      "description": "A case from the Franklin Supreme Court or Court of Appeals interpreting the rule in your favor.",
+      "type": "case",
+      "required": true
+    },
+    {
+      "slot_id": "persuasive_1",
+      "label": "Supporting Authority",
+      "description": "Additional case law that reinforces your argument.",
+      "type": "any",
+      "required": false
+    },
+    {
+      "slot_id": "persuasive_2",
+      "label": "Additional Authority",
+      "description": "Further support — especially on any issue not covered by your other authorities.",
+      "type": "any",
+      "required": false
+    },
+    {
+      "slot_id": "counter",
+      "label": "Anticipated Counterargument",
+      "description": "A case the opposition might use, and why it doesn't apply here.",
+      "type": "any",
+      "required": false
+    }
+  ],
+  "scoring": {
+    "max_score": 100,
+    "categories": {
+      "relevance": {
+        "max": 30,
+        "description": "Do your authorities address non-compete enforceability?"
+      },
+      "strength": {
+        "max": 30,
+        "description": "Court level, recency, and factual similarity to our case."
+      },
+      "completeness": {
+        "max": 25,
+        "description": "Did you address all key issues and fill required slots?"
+      },
+      "efficiency": {
+        "max": 15,
+        "description": "Hours remaining — did you research efficiently?"
+      }
+    },
+    "authority_scores": {
+      "statute_01": {
+        "slot_best_fit": "foundation",
+        "relevance": 10,
+        "strength": 10,
+        "notes": "The controlling statute. Essential foundation."
+      },
+      "case_01": {
+        "slot_best_fit": "binding_precedent",
+        "relevance": 10,
+        "strength": 9,
+        "notes": "Directly on point — appellate court struck down overbroad geographic scope."
+      },
+      "case_02": {
+        "slot_best_fit": "persuasive_1",
+        "relevance": 8,
+        "strength": 7,
+        "notes": "Supreme Court case on legitimate business interest — strong but older."
+      },
+      "case_04": {
+        "slot_best_fit": "persuasive_1",
+        "relevance": 9,
+        "strength": 8,
+        "notes": "Recent appellate case on industry mismatch. Very helpful."
+      },
+      "case_05": {
+        "slot_best_fit": "persuasive_2",
+        "relevance": 7,
+        "strength": 5,
+        "notes": "Sister-state case — persuasive but not binding."
+      },
+      "case_07": {
+        "slot_best_fit": "counter",
+        "relevance": 8,
+        "strength": 7,
+        "notes": "The opposition's best case. Distinguishable on trade secrets."
+      },
+      "case_09": {
+        "slot_best_fit": "persuasive_2",
+        "relevance": 6,
+        "strength": 6,
+        "notes": "Useful on temporal reasonableness."
+      },
+      "case_10": {
+        "slot_best_fit": "binding_precedent",
+        "relevance": 7,
+        "strength": 8,
+        "notes": "Good alternative binding precedent. Narrower than case_01."
+      },
+      "statute_02": {
+        "slot_best_fit": "persuasive_2",
+        "relevance": 5,
+        "strength": 4,
+        "notes": "Trade secrets statute — useful to show Sarah didn't have any."
+      }
+    },
+    "completeness_checklist": [
+      {
+        "id": "has_foundation",
+        "description": "Cited the controlling statute on non-compete enforceability",
+        "points": 8,
+        "condition": {
+          "type": "slot_contains_any",
+          "slot_id": "foundation",
+          "authority_ids": ["statute_01"]
+        }
+      },
+      {
+        "id": "has_binding",
+        "description": "Cited binding Franklin precedent",
+        "points": 7,
+        "condition": {
+          "type": "slot_contains_any",
+          "slot_id": "binding_precedent",
+          "authority_ids": ["case_01", "case_02", "case_04", "case_10"]
+        }
+      },
+      {
+        "id": "addressed_scope",
+        "description": "Addressed geographic or temporal scope with authority",
+        "points": 5,
+        "condition": {
+          "type": "any_submitted",
+          "authority_ids": ["case_01", "case_09"]
+        }
+      },
+      {
+        "id": "anticipated_counter",
+        "description": "Anticipated the opposition's strongest case",
+        "points": 5,
+        "condition": {
+          "type": "slot_contains_any",
+          "slot_id": "counter",
+          "authority_ids": ["case_07", "case_03"]
+        }
+      }
+    ]
+  },
+  "rulings": {
+    "A": {
+      "min_score": 90,
+      "judge_name": "Hon. Patricia Wardlaw",
+      "ruling": "Motion to dismiss granted. The court finds the non-compete agreement unreasonably broad in both geographic scope and competitive activity restrictions. Counsel's briefing was thorough and well-supported. The preliminary injunction is denied.",
+      "partner_note": "Excellent work, associate. The client is thrilled. I'm putting you on the Greystone matter next."
+    },
+    "B": {
+      "min_score": 75,
+      "judge_name": "Hon. Patricia Wardlaw",
+      "ruling": "Motion to dismiss granted. While the briefing could have been more thorough on certain points, the court agrees that the non-compete is unreasonably broad. Preliminary injunction denied.",
+      "partner_note": "Good work. A few gaps in the research, but the result speaks for itself."
+    },
+    "C": {
+      "min_score": 60,
+      "judge_name": "Hon. Patricia Wardlaw",
+      "ruling": "The court finds the non-compete partially unenforceable. The geographic restriction is struck, but the temporal restriction stands. Both parties bear their own costs.",
+      "partner_note": "Adequate result, but we left points on the table. Let's debrief on what you could have found with more targeted research."
+    },
+    "D": {
+      "min_score": 40,
+      "judge_name": "Hon. Patricia Wardlaw",
+      "ruling": "Motion to dismiss denied. The court is not persuaded that the non-compete is unreasonable on its face. The matter will proceed to a full hearing.",
+      "partner_note": "This should have been a stronger showing. We'll need to regroup before the hearing."
+    },
+    "F": {
+      "min_score": 0,
+      "judge_name": "Hon. Patricia Wardlaw",
+      "ruling": "Motion to dismiss denied. Counsel's briefing failed to adequately address the controlling law. The court strongly encourages more thorough preparation going forward.",
+      "partner_note": "We need to talk about this one."
+    }
+  }
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "statute_01",
+    "title": "Franklin Rev. Stat. § 542.330 — Restrictive Employment Covenants",
+    "jurisdiction": "Franklin",
+    "text": "Section 542.330. Restrictive Employment Covenants.\n\n(1) A covenant not to compete arising from an employment relationship is enforceable only if the covenant is:\n    (a) necessary to protect a legitimate business interest of the employer, including but not limited to trade secrets, confidential business information, and substantial client relationships;\n    (b) reasonable in geographic scope;\n    (c) reasonable in temporal duration; and\n    (d) not unduly burdensome to the employee.\n\n(2) The court shall consider the totality of circumstances in evaluating reasonableness, including the nature of the employee's position, the employee's access to confidential information, and the competitive landscape of the relevant industry. The employer bears the burden of establishing that each element of the restriction satisfies the requirements of subsection (1).\n\n(3) A court may modify an unreasonable covenant to render it enforceable only if the court finds that the original terms were not unreasonable on their face and that the employer acted in good faith in drafting the covenant. If the original terms are facially unreasonable, the court shall void the covenant in its entirety.\n\n(4) This section does not apply to covenants entered into in connection with the sale of a business or a partnership dissolution.\n\nHistory: Enacted 2002. Amended 2015 (adding subsection (3)).",
+    "effective_date": "2002 (amended 2015)",
+    "citations": [],
+    "cited_by": ["case_01", "case_02", "case_03", "case_04", "case_06", "case_07", "case_09", "case_10", "case_11", "case_12"],
+    "tags": ["non-compete", "restrictive covenant", "reasonableness", "employment", "trade secrets", "blue pencil", "reformation"]
+  },
+  {
+    "id": "statute_02",
+    "title": "Franklin Rev. Stat. § 765.110 — Trade Secrets Protection Act",
+    "jurisdiction": "Franklin",
+    "text": "Section 765.110. Trade Secrets Protection Act.\n\n(1) For purposes of this chapter, 'trade secret' means information, including but not limited to a formula, pattern, compilation, program, device, method, technique, or process, that:\n    (a) derives independent economic value, actual or potential, from not being generally known to or readily ascertainable by other persons who can obtain economic value from its disclosure or use; and\n    (b) is the subject of efforts that are reasonable under the circumstances to maintain its secrecy.\n\n(2) An employer alleging misappropriation of trade secrets must identify the specific information claimed as a trade secret with reasonable particularity.\n\n(3) General knowledge, skill, and experience acquired during employment do not constitute trade secrets, even if developed or refined during the course of employment.\n\n(4) Client lists may constitute trade secrets only where the employer demonstrates that the list reflects substantial effort in compilation, is not readily ascertainable from public sources, and provides a competitive advantage.\n\nHistory: Enacted 1998.",
+    "effective_date": "1998",
+    "citations": [],
+    "cited_by": [],
+    "tags": ["trade secrets", "confidential information", "client lists", "misappropriation"]
+  }
+]
