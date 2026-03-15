@@ -3,7 +3,7 @@
 	import { submitArgument, getRebuttal } from '$lib/api.js';
 	import {
 		getState, assignToSlot, removeFromSlot,
-		goToResearch, goToRebuttal, goToScore
+		goToResearch, goToRebuttal, setScoreResult
 	} from '$lib/game-state.svelte.js';
 	import { getConfidence } from '$lib/scoring.js';
 	import GameGuard from '$lib/components/GameGuard.svelte';
@@ -62,12 +62,9 @@
 				state.billableHours
 			);
 
-			// Get rebuttal data
 			const rebuttal = await getRebuttal(state.sessionId);
+			setScoreResult(result);
 			goToRebuttal(rebuttal);
-			// Store score for later
-			goToScore(result);
-			// Navigate to rebuttal first
 			goto(`/rebuttal/${state.scenario.id}`);
 		} catch (e) {
 			error = e.message;

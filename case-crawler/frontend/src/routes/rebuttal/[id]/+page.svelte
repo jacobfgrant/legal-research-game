@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { getState } from '$lib/game-state.svelte.js';
+	import { getState, goToScore } from '$lib/game-state.svelte.js';
 	import GameGuard from '$lib/components/GameGuard.svelte';
 
 	let state = $derived(getState());
@@ -17,6 +17,7 @@
 	}
 
 	function handleSeeRuling() {
+		goToScore();
 		goto(`/score/${state.scenario.id}`);
 	}
 </script>

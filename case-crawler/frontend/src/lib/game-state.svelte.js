@@ -71,8 +71,11 @@ export function goToRebuttal(data) {
 	gamePhase = 'rebuttal';
 }
 
-export function goToScore(result) {
+export function setScoreResult(result) {
 	scoreResult = result;
+}
+
+export function goToScore() {
 	gamePhase = 'score';
 }
 
