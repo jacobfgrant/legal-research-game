@@ -2,9 +2,30 @@
 
 A web-based video game that captures the addictive detective work of legal research — chasing citations, connecting cases, building arguments.
 
-## Status
+## Repo Structure
 
-Two game concepts are under evaluation. See the concept docs before making design decisions:
+This is a monorepo containing two independent games and shared docs:
+
+```
+legal-research-game/
+  CLAUDE.md
+  docs/                          -- shared concept docs and beginner guides
+    case-crawler-concept.md
+    the-brief-concept.md
+    beginners/
+  case-crawler/                  -- puzzle/strategy game (independent)
+    frontend/                    -- SvelteKit app
+    backend/                     -- FastAPI server
+  the-brief/                     -- narrative/branching game (independent)
+    frontend/                    -- SvelteKit app
+    backend/                     -- FastAPI server
+```
+
+Each game is fully independent — its own frontend, backend, and data. They share nothing except docs and this CLAUDE.md. Either can be developed, tested, and deployed on its own.
+
+## Game Concepts
+
+See the concept docs before making design decisions:
 
 - `docs/case-crawler-concept.md` — Puzzle/strategy game. Player searches a case database, builds arguments, manages billable hours.
 - `docs/the-brief-concept.md` — Narrative/branching game. Research choices drive story paths and career outcomes.
@@ -21,7 +42,7 @@ These are locked in — don't suggest alternatives unless there's a clear reason
 - **Docker** — deployment via `docker compose up`
 - **Caddy or nginx** — reverse proxy, both services on one VPS
 
-### Architecture
+### Architecture (per game)
 
 - SvelteKit frontend and FastAPI backend are separate services on the same VPS
 - Game logic lives client-side (single-player) — backend handles persistence and serves case/scenario data
@@ -29,6 +50,7 @@ These are locked in — don't suggest alternatives unless there's a clear reason
 
 ## Conventions
 
-- **Game content is data, not code.** Cases, statutes, scenarios, story branches, and other game content go in structured data files (JSON or YAML in a `data/` or `story/` directory). A non-programmer should be able to author and edit game content without touching Python.
-- **Keep it simple.** This is a small web game. No microservices, no complex infrastructure, no unnecessary abstractions.
-- **Flat project structure.** Don't create deep directory hierarchies. One level of nesting is usually enough.
+- **Games are independent.** Don't create shared libraries or cross-dependencies between the two games. If both need similar functionality, duplicate it — premature abstraction across games will create coupling.
+- **Game content is data, not code.** Cases, statutes, scenarios, story branches, and other game content go in structured data files (JSON or YAML). A non-programmer should be able to author and edit game content without touching Python.
+- **Keep it simple.** These are small web games. No microservices, no complex infrastructure, no unnecessary abstractions.
+- **Flat project structure.** Don't create deep directory hierarchies within each game. One level of nesting is usually enough.
