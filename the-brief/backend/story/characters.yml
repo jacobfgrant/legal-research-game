@@ -25,3 +25,46 @@ characters:
     description: >
       Known for demanding thorough briefing.
       She reads every case you cite.
+
+  james:
+    name: "James Okafor"
+    title: "Partner"
+    description: >
+      Practical, no-nonsense. Runs a smaller practice group.
+      He gives clear instructions and expects results, not excuses.
+
+  thornton_client:
+    name: "Richard Thornton"
+    title: "CEO, Thornton Freight Corp."
+    description: >
+      Impatient businessman who doesn't understand why contracts
+      can't just be broken when circumstances change.
+
+  rivera_client:
+    name: "Maria Rivera"
+    title: "Tenant"
+    description: >
+      Single mother who moved out of her apartment after six months
+      of water damage. She needs this case to recover her deposit
+      and relocation costs.
+
+  judge_ward:
+    name: "Judge Samuel Ward"
+    title: "Superior Court Judge"
+    description: >
+      Methodical and fair. Takes his time with decisions.
+      Prefers substance over style.
+
+  carlos:
+    name: "Carlos Delgado"
+    title: "Former Transit Worker"
+    description: >
+      Fired after reporting safety violations at Metro Transit.
+      Quiet, principled. Doesn't want money — wants his name cleared.
+
+  mta_counsel:
+    name: "Linda Park"
+    title: "Deputy General Counsel, Metro Transit Authority"
+    description: >
+      Sharp government lawyer. Knows the administrative exhaustion
+      doctrine inside and out. Doesn't grandstand — just wins.

@@ -1,8 +1,20 @@
 title: "The Brief"
-version: "0.1.0"
+version: "0.2.0"
 chapters:
   - id: chapter-01
     file: chapter-01.yml
     title: "The Midnight Memo"
     description: "A breach of contract dispute lands on your desk at 11 PM."
     unlocked_by: null
+
+  - id: chapter-02
+    file: chapter-02.yml
+    title: "Second Chair"
+    description: "Six weeks in. A new case tests whether Chapter 1 was a fluke."
+    unlocked_by: "flags.chapter_01_complete"
+
+  - id: chapter-03
+    file: chapter-03.yml
+    title: "First Chair"
+    description: "A high-profile wrongful termination case. The press is watching."
+    unlocked_by: "flags.chapter_02_complete"

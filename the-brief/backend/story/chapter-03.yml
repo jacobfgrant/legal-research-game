@@ -1,0 +1,596 @@
+id: chapter-03
+title: "First Chair"
+description: "A high-profile wrongful termination case. The press is watching."
+characters: [margaret, player, james, carlos, mta_counsel, judge]
+
+research_items:
+  whistleblower_statute:
+    name: "State Whistleblower Protection Act, Section 4(b)"
+    description: >
+      Prohibits retaliation against employees who report violations
+      of law to a public body. Requires the employee to have a
+      reasonable belief that a violation occurred.
+    type: statute
+
+  garcetti_v_ceballos:
+    name: "Garcetti v. Ceballos (2006)"
+    description: >
+      The Supreme Court held that public employees speaking
+      pursuant to their official duties are not protected by the
+      First Amendment. The key question is whether the speech was
+      made as a citizen or as an employee.
+    type: case
+    jurisdiction: binding
+
+  lane_v_franks:
+    name: "Lane v. Franks (2014)"
+    description: >
+      Narrowed Garcetti. The Supreme Court held that sworn
+      testimony by a public employee is citizen speech protected
+      by the First Amendment, even when the testimony relates to
+      information learned through employment. Distinguished
+      routine job duties from acts of citizenship.
+    type: case
+    jurisdiction: binding
+
+  pickering_v_board:
+    name: "Pickering v. Board of Education (1968)"
+    description: >
+      Established the balancing test for public employee speech:
+      the employee's interest in commenting on matters of public
+      concern must be weighed against the employer's interest in
+      efficient operations.
+    type: case
+    jurisdiction: binding
+
+  delgado_memo:
+    name: "Internal MTA Safety Report (Delgado)"
+    description: >
+      An internal safety report authored by Carlos Delgado
+      documenting brake system failures on three transit lines.
+      Filed through official channels — but also sent to the
+      city transportation safety board.
+    type: document
+
+start_scene: ch3_opening
+
+scenes:
+
+  # =========================================
+  # ACT 1: SETUP
+  # =========================================
+
+  ch3_opening:
+    act: setup
+    text: |
+      Three months at the firm. You've handled contracts, you've
+      handled tenants. Now the lobby TV is running a story you
+      recognize.
+    conditions:
+      - if: "career.reputation >= 4"
+        text_append: |
+          Your phone buzzes. It's Margaret. "My office. Bring
+          a notepad."
+
+          You've earned this.
+      - if: "career.reputation < 4"
+        text_append: |
+          An email from Margaret lands in your inbox — cc'd to
+          three other associates. "Research support needed on
+          Delgado v. Metro Transit Authority. See attached."
+
+          You're on the team. Not leading it, but on it.
+    choices:
+      - label: "Continue"
+        target: ch3_assignment_lead
+        conditions:
+          - if: "career.reputation >= 4"
+      - label: "Continue"
+        target: ch3_assignment_support
+        conditions:
+          - if: "career.reputation < 4"
+
+  ch3_assignment_lead:
+    act: setup
+    text: |
+      Margaret is standing when you walk in. That means this
+      is important.
+    dialogue:
+      - character: margaret
+        line: >
+          Carlos Delgado. Ten-year veteran at Metro Transit.
+          Filed safety reports about brake system failures on
+          three lines. Two weeks after his last report, he was
+          terminated. Officially for "performance issues."
+      - character: margaret
+        line: >
+          The MTA's motion to dismiss argues he failed to exhaust
+          administrative remedies. Their backup argument is
+          Garcetti — they'll say his safety reports were part of
+          his job duties, not protected speech.
+      - character: margaret
+        line: >
+          You're second chair on this. I want you to argue the
+          Garcetti motion. Find me the law that gets past it.
+    conditions:
+      - if: "flags.margaret_trust_strong"
+        dialogue_append:
+          - character: margaret
+            line: >
+              You've earned this. The Thornton brief showed me
+              you can build an argument, not just find cases.
+      - if: "flags.james_trust"
+        dialogue_append:
+          - character: james
+            line: >
+              James Okafor recommended you. He said you found
+              an angle no one else would have on the Rivera
+              case. I could use that instinct here.
+    choices:
+      - label: "Meet the client first"
+        target: ch3_meet_carlos
+        consequences:
+          relationship.margaret: 1
+      - label: "Start researching Garcetti immediately"
+        target: ch3_research_start
+
+  ch3_assignment_support:
+    act: setup
+    text: |
+      You read Margaret's email and the attached complaint.
+      Carlos Delgado, a transit worker, was fired after filing
+      safety reports. The case has gotten media attention.
+
+      Your assignment: research the First Amendment defense.
+      Specifically, whether Delgado's speech is protected under
+      Garcetti v. Ceballos.
+    choices:
+      - label: "Read the complaint carefully"
+        target: ch3_read_complaint
+      - label: "Start researching Garcetti"
+        target: ch3_research_start
+
+  ch3_meet_carlos:
+    act: setup
+    text: |
+      Carlos Delgado sits across from you in the conference
+      room. He's wearing a pressed shirt, hands folded. He
+      doesn't look angry. He looks tired.
+    dialogue:
+      - character: carlos
+        line: >
+          I worked there ten years. I drove the 42 line, the 17,
+          the express. I knew those buses. I knew when something
+          was wrong.
+      - character: carlos
+        line: >
+          The brakes on three lines were failing inspections. I
+          filed the reports — that's what you're supposed to do.
+          Internal reports, through the system.
+      - character: carlos
+        line: >
+          But nothing changed. So I sent the report to the city
+          transportation safety board too. Two weeks later, I was
+          terminated. "Performance issues."
+      - character: carlos
+        line: >
+          I don't want money. I want them to fix the brakes.
+          And I want my name cleared.
+    choices:
+      - label: "Begin your research"
+        target: ch3_research_start
+        consequences:
+          flags.met_carlos: true
+
+  ch3_read_complaint:
+    act: setup
+    text: |
+      The complaint tells Carlos Delgado's story. Ten years at
+      Metro Transit. Multiple safety reports filed internally.
+      When nothing changed, he sent the report to the city
+      safety board. Two weeks later — terminated.
+
+      The MTA's defense: his speech was part of his job duties,
+      not protected by the First Amendment under Garcetti v.
+      Ceballos.
+    choices:
+      - label: "Start researching"
+        target: ch3_research_start
+        consequences:
+          flags.read_complaint_ch3: true
+
+  # =========================================
+  # ACT 2: RESEARCH
+  # =========================================
+
+  ch3_research_start:
+    act: research
+    text: |
+      The core problem: Garcetti v. Ceballos (2006) says public
+      employees speaking "pursuant to their official duties" are
+      not protected by the First Amendment. The MTA will argue
+      that filing safety reports WAS Delgado's official duty.
+
+      But Delgado also sent the report to an outside body — the
+      city safety board. Is that still "official duties"?
+    choices:
+      - label: "Read Garcetti v. Ceballos first — know the enemy"
+        target: ch3_garcetti_research
+        consequences:
+          research_found: [garcetti_v_ceballos]
+      - label: "Look for exceptions to Garcetti"
+        target: ch3_exceptions_search
+      - label: "Research the whistleblower statute directly"
+        target: ch3_whistleblower_statute
+        consequences:
+          research_found: [whistleblower_statute]
+
+  ch3_whistleblower_statute:
+    act: research
+    text: |
+      The State Whistleblower Protection Act, Section 4(b).
+      It prohibits retaliation against employees who report
+      violations of law to a "public body." The statute is
+      clear on its face — but the MTA will argue the internal
+      safety reports don't count as reports to a "public body."
+
+      The external report to the city safety board, though —
+      that's a different story. That's exactly the kind of
+      report the statute was designed to protect.
+    consequences:
+      research_found: [whistleblower_statute]
+    choices:
+      - label: "Now tackle the First Amendment issue — read Garcetti"
+        target: ch3_garcetti_research
+        consequences:
+          research_found: [garcetti_v_ceballos]
+      - label: "Look for cases narrowing Garcetti"
+        target: ch3_lane_discovery
+        consequences:
+          research_found: [lane_v_franks]
+
+  ch3_garcetti_research:
+    act: research
+    text: |
+      Garcetti v. Ceballos (2006). A deputy district attorney
+      wrote a memo recommending dismissal of a case. He was
+      reassigned. The Supreme Court held his memo was written
+      pursuant to his official duties — and therefore not
+      protected speech.
+
+      The holding is broad. But the Court left open the
+      possibility that certain types of speech, even by
+      employees, might still be protected.
+    conditions:
+      - if: "flags.read_complaint_ch3"
+        text_append: |
+          Having read the MTA's defense, you can see exactly
+          how they'll use this case. Delgado's internal safety
+          reports were, arguably, part of his job.
+      - if: "research_found.chen_v_apex"
+        text_append: |
+          The instinct from the Hartfield case surfaces again:
+          the broad rule might have a critical distinction
+          buried in the facts. What makes Delgado's situation
+          different from Ceballos's?
+    choices:
+      - label: "Look for cases that narrow or limit Garcetti"
+        target: ch3_lane_discovery
+        consequences:
+          research_found: [lane_v_franks]
+          flags.garcetti_first: true
+      - label: "Research the Pickering balancing test"
+        target: ch3_pickering_research
+        consequences:
+          research_found: [pickering_v_board]
+
+  ch3_exceptions_search:
+    act: research
+    text: |
+      You search for exceptions and limitations to Garcetti.
+      Several circuits have struggled with its scope. One
+      case stands out — a 2014 Supreme Court decision that
+      narrowed the doctrine.
+    choices:
+      - label: "Read Lane v. Franks (2014)"
+        target: ch3_lane_discovery
+        consequences:
+          research_found: [lane_v_franks]
+      - label: "Look at the older Pickering test first"
+        target: ch3_pickering_research
+        consequences:
+          research_found: [pickering_v_board]
+
+  ch3_pickering_research:
+    act: research
+    text: |
+      Pickering v. Board of Education (1968). The balancing
+      test: an employee's interest in commenting on matters of
+      public concern versus the employer's interest in
+      efficient operations.
+
+      Transit brake safety is clearly a matter of public
+      concern. But Pickering alone won't overcome Garcetti —
+      if the speech was made as an employee, Garcetti blocks
+      the claim before the balancing test even applies.
+    consequences:
+      research_found: [pickering_v_board]
+    choices:
+      - label: "You need something that gets past Garcetti first"
+        target: ch3_lane_discovery
+        consequences:
+          research_found: [lane_v_franks]
+      - label: "Build the argument around Pickering anyway"
+        target: ch3_weak_argument
+
+  ch3_lane_discovery:
+    act: research
+    text: |
+      Lane v. Franks (2014). The Supreme Court narrowed
+      Garcetti on exactly the point you need.
+
+      The Court held that sworn testimony by a public employee
+      is citizen speech — protected by the First Amendment —
+      even when the testimony relates to information the
+      employee learned through their job. The key distinction:
+      the ACT of testifying (or reporting to an outside body)
+      is not itself an official duty, even if the underlying
+      knowledge came from the job.
+
+      For Delgado, this is critical. His internal safety
+      reports might fall under Garcetti. But his report to the
+      city safety board — an external body — looks much more
+      like the citizen speech Lane protects.
+    conditions:
+      - if: "flags.garcetti_first"
+        text_append: |
+          Reading Garcetti first made this clearer. You can
+          see exactly where Lane draws the line that Garcetti
+          left open.
+      - if: "flags.met_carlos"
+        text_append: |
+          You think of Carlos sitting in the conference room.
+          He filed the internal reports because it was his job.
+          He went to the safety board because it was the right
+          thing to do. That distinction matters — legally and
+          personally.
+    consequences:
+      research_found: [lane_v_franks]
+    choices:
+      - label: "Look for the internal MTA safety report — you need the facts"
+        target: ch3_memo_discovery
+        consequences:
+          flags.found_lane: true
+      - label: "Build the argument around Lane v. Franks"
+        target: ch3_build_argument_strong
+        consequences:
+          flags.found_lane: true
+
+  ch3_weak_argument:
+    act: research
+    text: |
+      You draft an argument based on Pickering's balancing
+      test. It's a reasonable argument — transit safety is
+      clearly a public concern. But without addressing
+      Garcetti directly, the argument has a hole in it.
+    choices:
+      - label: "Go back and find something that addresses Garcetti"
+        target: ch3_lane_discovery
+        consequences:
+          research_found: [lane_v_franks]
+      - label: "Submit what you have"
+        target: ch3_outcome_weak
+        consequences:
+          flags.weak_argument: true
+
+  ch3_memo_discovery:
+    act: research
+    text: |
+      You request Delgado's personnel file and the internal
+      safety reports. Buried in the documents, you find
+      something important.
+
+      Delgado's safety report — the one about the brake
+      failures — was filed both internally AND externally.
+      The internal report went through MTA channels. But
+      Delgado also sent a copy directly to the city
+      transportation safety board, with a cover letter
+      explaining that he'd filed internally and seen no
+      action.
+
+      The cover letter is the key. It shows Delgado wasn't
+      just doing his job — he was acting as a citizen,
+      reporting a public safety concern to an oversight body.
+    consequences:
+      research_found: [delgado_memo]
+    choices:
+      - label: "Build the full argument: Lane + the external report"
+        target: ch3_build_argument_strong
+        consequences:
+          flags.found_memo: true
+
+  ch3_build_argument_strong:
+    act: research
+    text: |
+      You build the argument. Lane v. Franks establishes that
+      reporting to an external body is citizen speech, not
+      official duty speech. Delgado's external report to the
+      safety board fits squarely within Lane's framework.
+      Pickering's balancing test then weighs heavily in
+      Delgado's favor — transit safety is a matter of
+      paramount public concern.
+    conditions:
+      - if: "flags.found_memo"
+        text_append: |
+          The internal memo seals it. You can show the court
+          the exact moment Delgado crossed the line from
+          employee to citizen — when he sent that cover letter
+          to the safety board.
+    choices:
+      - label: "Submit the brief"
+        target: ch3_outcome_strong
+        consequences:
+          flags.strong_argument: true
+
+  # =========================================
+  # ACT 3: OUTCOMES
+  # =========================================
+
+  ch3_outcome_strong:
+    act: outcome
+    text: |
+      The motion hearing. The courtroom is fuller than usual —
+      a reporter sits in the gallery. The MTA's counsel presents
+      their Garcetti argument crisply. Then it's your side's
+      turn.
+    conditions:
+      - if: "career.reputation >= 4"
+        text_append: |
+          Margaret nods at you. You stand. Your first oral
+          argument.
+      - if: "career.reputation < 4"
+        text_append: |
+          Margaret presents the argument. Your research, her
+          delivery. You watch from counsel's table.
+    choices:
+      - label: "Continue"
+        target: ch3_hearing_strong
+
+  ch3_hearing_strong:
+    act: outcome
+    text: |
+      The Lane v. Franks argument lands. Judge Alvarez — yes,
+      the same Judge Alvarez from the Hartfield case — listens
+      intently.
+    conditions:
+      - if: "flags.chapter_01_strong_win"
+        dialogue_append:
+          - character: judge
+            line: >
+              I see Hartwell & Associates is before me again.
+              Your firm does thorough work.
+    dialogue:
+      - character: judge
+        line: >
+          The court finds that Mr. Delgado's report to the
+          city transportation safety board constitutes citizen
+          speech under Lane v. Franks. The Garcetti framework
+          does not bar his claim.
+      - character: judge
+        line: "The motion to dismiss is denied."
+    consequences:
+      career.reputation: 3
+      relationship.margaret: 2
+      flags.won_delgado: true
+    choices:
+      - label: "Continue"
+        target: ch3_aftermath_strong
+        conditions:
+          - if: "career.reputation >= 4"
+      - label: "Continue"
+        target: ch3_aftermath_support
+        conditions:
+          - if: "career.reputation < 4"
+
+  ch3_outcome_weak:
+    act: outcome
+    text: |
+      The motion hearing. Your Pickering argument is competent
+      but the MTA's counsel immediately attacks the Garcetti
+      gap.
+    dialogue:
+      - character: mta_counsel
+        line: >
+          Your Honor, counsel has not addressed the threshold
+          question. Under Garcetti, if Mr. Delgado's speech was
+          made pursuant to his official duties, the Pickering
+          balancing test doesn't even apply.
+    consequences:
+      career.reputation: 0
+    choices:
+      - label: "Continue"
+        target: ch3_hearing_weak
+
+  ch3_hearing_weak:
+    act: outcome
+    text: |
+      Judge Alvarez takes the motion under advisement. It's not
+      a loss — but it's not the decisive victory Delgado needed.
+    dialogue:
+      - character: judge
+        line: >
+          The court will take this under advisement. I want
+          supplemental briefing on the Garcetti issue within
+          fourteen days.
+    consequences:
+      flags.delgado_weak: true
+    choices:
+      - label: "Continue"
+        target: ch3_aftermath_weak
+
+  # --- TERMINAL / ENDING SCENES ---
+
+  ch3_aftermath_strong:
+    act: outcome
+    terminal: true
+    text: |
+      Outside the courtroom, Carlos Delgado shakes your hand.
+      He doesn't say much. He doesn't need to.
+
+      Margaret walks beside you back to the car.
+    dialogue:
+      - character: margaret
+        line: >
+          You argued well in there. Not just the research —
+          the delivery. The way you connected Lane to the
+          facts.
+      - character: margaret
+        line: >
+          I've been doing this twenty years. I remember what
+          it felt like the first time a judge ruled my way on
+          something that mattered.
+      - character: margaret
+        line: >
+          You've got a future at this firm. A real one.
+    consequences:
+      flags.chapter_03_complete: true
+      flags.game_ending: star
+
+  ch3_aftermath_support:
+    act: outcome
+    terminal: true
+    text: |
+      Outside the courtroom, Carlos Delgado thanks Margaret.
+      Then he turns to you.
+    dialogue:
+      - character: carlos
+        line: >
+          Margaret told me you found the Lane case. And the
+          safety board report angle. Thank you.
+      - character: margaret
+        line: >
+          Good research wins cases. Don't forget that.
+    consequences:
+      flags.chapter_03_complete: true
+      flags.game_ending: solid
+
+  ch3_aftermath_weak:
+    act: outcome
+    terminal: true
+    text: |
+      Walking back to the office, the weight of the hearing
+      settles in. It wasn't a loss — Delgado's case is still
+      alive. But you know the supplemental briefing will be
+      harder. You know someone else will probably be assigned
+      the Garcetti research this time.
+
+      Still. You're here. You're learning. And the next case
+      will go differently.
+    dialogue:
+      - character: player
+        line: >
+          Some lawyers are naturals. Some of us grow into it.
+          I'm growing.
+    consequences:
+      flags.chapter_03_complete: true
+      flags.game_ending: survivor

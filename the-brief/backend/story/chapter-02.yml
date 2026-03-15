@@ -1,0 +1,816 @@
+id: chapter-02
+title: "Second Chair"
+description: "Six weeks in. A new case tests whether Chapter 1 was a fluke."
+characters: [margaret, player, james, thornton_client, rivera_client, judge_ward]
+
+research_items:
+  # Strong path: force majeure / impracticability
+  restatement_261:
+    name: "Restatement (Second) of Contracts, Section 261"
+    description: >
+      A party's performance is excused when made impracticable by
+      an event whose non-occurrence was a basic assumption of the
+      contract — but impracticability requires more than mere
+      increased cost or difficulty.
+    type: statute
+
+  eastern_airlines_v_gulf:
+    name: "Eastern Air Lines v. Gulf Oil Corp. (1975)"
+    description: >
+      Mere unprofitability does not constitute impracticability.
+      A party must show that performance has become vitally
+      different from what was reasonably expected, not merely
+      more expensive.
+    type: case
+    jurisdiction: binding
+
+  hess_v_kenmore:
+    name: "Hess Corp. v. Kenmore Trading (2020)"
+    description: >
+      Regulatory changes that fundamentally alter the nature of
+      contractual obligations — not just their cost — may trigger
+      force majeure clauses. Distinguished earlier cases by
+      focusing on whether the regulation created a new legal
+      prohibition versus mere economic hardship.
+    type: case
+    jurisdiction: binding
+
+  # Adequate path: constructive eviction
+  reste_realty_v_cooper:
+    name: "Reste Realty Corp. v. Cooper (1969)"
+    description: >
+      Established the modern constructive eviction standard:
+      a landlord's substantial interference with the tenant's
+      use and enjoyment of the premises, where the tenant
+      vacates within a reasonable time.
+    type: case
+    jurisdiction: binding
+
+  blackett_v_olanoff:
+    name: "Blackett v. Olanoff (1977)"
+    description: >
+      A landlord is liable for conditions that are within
+      their power to control, even if the landlord did not
+      directly cause the interference. Failure to act can
+      constitute constructive eviction.
+    type: case
+    jurisdiction: binding
+
+  wade_v_jobe:
+    name: "Wade v. Jobe (1991)"
+    description: >
+      Recognized an implied warranty of habitability in
+      residential leases, independent of the constructive
+      eviction doctrine. A tenant need not vacate to assert
+      this claim — fundamentally changing the available
+      remedies.
+    type: case
+    jurisdiction: binding
+
+start_scene: ch2_opening
+
+scenes:
+
+  # =========================================
+  # ACT 1: SETUP
+  # =========================================
+
+  ch2_opening:
+    act: setup
+    text: |
+      Six weeks have passed since the Hartfield motion. You've
+      settled into a rhythm at the firm — early mornings, late
+      nights, the steady hum of work that never quite stops.
+    conditions:
+      - if: "flags.margaret_trust"
+        text_append: |
+          Margaret has been giving you more responsibility. When
+          she passes you in the hallway, she nods — not warmly,
+          exactly, but with recognition. You've earned something.
+      - if: "flags.margaret_neutral"
+        text_append: |
+          You've been picking up assignments where you can. Solid
+          work, nothing spectacular. The kind of work that keeps
+          you employed but doesn't get you noticed.
+    choices:
+      - label: "Continue"
+        target: ch2_margaret_assignment
+        conditions:
+          - if: "flags.margaret_trust"
+      - label: "Continue"
+        target: ch2_james_assignment
+        conditions:
+          - if: "flags.margaret_neutral"
+
+  # --- STRONG PATH: MARGARET'S CASE ---
+
+  ch2_margaret_assignment:
+    act: setup
+    text: |
+      Margaret appears at your office door. No knock — she never
+      knocks.
+    dialogue:
+      - character: margaret
+        line: >
+          Thornton Freight. Complex commercial dispute. They
+          signed a five-year freight forwarding agreement with
+          Pacific Rim Logistics. Two years in, new customs
+          regulations made the routes unprofitable.
+      - character: margaret
+        line: >
+          Thornton stopped performing. Pacific Rim is suing for
+          breach. Thornton's defense is force majeure — the
+          regulatory change made performance impracticable.
+      - character: margaret
+        line: >
+          I need you to research the impracticability defense.
+          Specifically — does a regulation that makes a contract
+          unprofitable, but not impossible, trigger force majeure?
+    conditions:
+      - if: "research_found.chen_v_apex"
+        dialogue_append:
+          - character: margaret
+            line: >
+              You showed good instincts on the Hartfield case.
+              I'm counting on that again.
+    choices:
+      - label: "Ask about the specific contract language"
+        target: ch2_thornton_details
+        consequences:
+          relationship.margaret: 1
+      - label: "Head to the library"
+        target: ch2_strong_research_start
+
+  ch2_thornton_details:
+    act: setup
+    text: |
+      Margaret pulls up the contract on her screen.
+    dialogue:
+      - character: margaret
+        line: >
+          The force majeure clause lists "government action,
+          regulations, or orders" as triggering events. But it
+          also says the event must "prevent" performance — not
+          just make it more expensive.
+      - character: margaret
+        line: >
+          Pacific Rim's argument is simple: the regulations
+          didn't prevent anything. They just cut into Thornton's
+          margins. And there's one more thing.
+      - character: margaret
+        line: >
+          I want you to draft the impracticability section of
+          our brief. Not just research — the actual argument.
+    choices:
+      - label: "Begin your research"
+        target: ch2_strong_research_start
+        consequences:
+          flags.got_details: true
+
+  ch2_strong_research_start:
+    act: research
+    text: |
+      The question is narrow but deep: when does a regulatory
+      change cross the line from "makes the contract less
+      profitable" to "makes performance impracticable"?
+
+      Where do you begin?
+    choices:
+      - label: "Start with the Restatement — find the doctrinal framework"
+        target: ch2_restatement_research
+        consequences:
+          research_found: [restatement_261]
+      - label: "Start with case law — find precedent on regulatory changes"
+        target: ch2_regulatory_cases
+      - label: "Read Pacific Rim's complaint first"
+        target: ch2_read_complaint
+
+  ch2_restatement_research:
+    act: research
+    text: |
+      Restatement (Second) of Contracts, Section 261. The
+      impracticability doctrine excuses performance when an
+      event whose non-occurrence was a "basic assumption" of the
+      contract makes performance impracticable.
+
+      The commentary is clear: mere increase in cost is not
+      enough. But where's the line?
+    choices:
+      - label: "Find cases applying Section 261 to regulatory changes"
+        target: ch2_eastern_airlines
+        consequences:
+          research_found: [eastern_airlines_v_gulf]
+      - label: "Look for the force majeure angle specifically"
+        target: ch2_force_majeure_search
+
+  ch2_regulatory_cases:
+    act: research
+    text: |
+      You search for cases involving regulatory changes and
+      contract performance. The results split into two camps:
+      cases where courts excused performance and cases where
+      they didn't.
+    choices:
+      - label: "Read Eastern Air Lines v. Gulf Oil — a binding case on impracticability"
+        target: ch2_eastern_airlines
+        consequences:
+          research_found: [eastern_airlines_v_gulf]
+      - label: "Search specifically for force majeure and regulatory change"
+        target: ch2_force_majeure_search
+
+  ch2_read_complaint:
+    act: research
+    text: |
+      Pacific Rim's complaint is aggressive. They argue
+      Thornton simply didn't want to lose money — that the
+      regulations added cost but didn't prevent performance.
+      They cite Eastern Air Lines v. Gulf Oil for the
+      proposition that mere unprofitability isn't enough.
+    dialogue:
+      - character: player
+        line: >
+          They're citing Eastern Airlines against us. I need
+          to know that case inside out — and find something
+          that distinguishes it.
+    consequences:
+      flags.read_complaint: true
+      research_found: [eastern_airlines_v_gulf]
+    choices:
+      - label: "Read Eastern Air Lines v. Gulf Oil"
+        target: ch2_eastern_airlines
+      - label: "Skip ahead — find something that helps Thornton"
+        target: ch2_force_majeure_search
+
+  ch2_eastern_airlines:
+    act: research
+    text: |
+      Eastern Air Lines v. Gulf Oil (1975). Gulf tried to
+      raise fuel prices beyond the contract rate, citing the
+      oil embargo. The court held that increased cost alone —
+      even dramatic cost increases — does not make performance
+      impracticable.
+
+      This case cuts against Thornton. But you notice a
+      distinction: in Eastern Airlines, the product could
+      still be delivered. The question is whether Thornton's
+      situation is fundamentally different.
+    conditions:
+      - if: "flags.read_complaint"
+        text_append: |
+          Having read the complaint first, you can see exactly
+          how Pacific Rim uses this case. Their framing is
+          strong but narrow.
+    choices:
+      - label: "Search for cases where regulatory changes DID excuse performance"
+        target: ch2_hess_discovery
+        consequences:
+          research_found: [hess_v_kenmore]
+          flags.found_distinction_path: true
+      - label: "Look at the Restatement for the doctrinal framework"
+        target: ch2_restatement_research
+        consequences:
+          research_found: [restatement_261]
+
+  ch2_force_majeure_search:
+    act: research
+    text: |
+      You search for cases specifically addressing force
+      majeure clauses and regulatory changes. Most of the
+      results involve pandemic-era disputes — interesting
+      but not on point.
+
+      One result catches your eye: a 2020 case involving
+      trade regulations.
+    choices:
+      - label: "Read Hess Corp. v. Kenmore Trading (2020)"
+        target: ch2_hess_discovery
+        consequences:
+          research_found: [hess_v_kenmore]
+      - label: "Broaden the search — maybe impracticability is the wrong angle"
+        target: ch2_weak_argument
+        consequences:
+          flags.weak_research: true
+
+  ch2_hess_discovery:
+    act: research
+    text: |
+      Hess Corp. v. Kenmore Trading (2020). This is it.
+
+      The court distinguished Eastern Airlines on a critical
+      point: when a regulation doesn't just increase cost but
+      fundamentally alters the nature of the obligation — when
+      it creates a new legal prohibition rather than mere
+      economic hardship — that can constitute impracticability.
+
+      The parallels to Thornton's situation are striking.
+      The new customs regulations didn't just make the routes
+      expensive. They required new certifications, altered
+      shipping procedures, and effectively created a different
+      business than the one Thornton contracted to perform.
+    conditions:
+      - if: "flags.found_distinction_path"
+        text_append: |
+          You found it by following the thread — Eastern
+          Airlines led you to the distinction, and the
+          distinction led you here. Good research.
+      - if: "research_found.chen_v_apex"
+        text_append: |
+          The pattern feels familiar. Like Chen v. Apex in
+          the Hartfield case, the key is not the broad rule
+          but the specific factual distinction.
+    consequences:
+      research_found: [hess_v_kenmore]
+    choices:
+      - label: "Draft the brief section around Hess v. Kenmore"
+        target: ch2_draft_strong
+        consequences:
+          flags.strong_draft: true
+      - label: "Keep researching — build a stronger foundation first"
+        target: ch2_restatement_research
+        consequences:
+          research_found: [restatement_261]
+
+  ch2_weak_argument:
+    act: research
+    text: |
+      You spend an hour searching broadly. You find several
+      cases that touch on regulatory changes and contracts,
+      but none that cleanly support Thornton's position. The
+      argument you're building is defensible but thin.
+    choices:
+      - label: "Go back to the impracticability cases"
+        target: ch2_hess_discovery
+        consequences:
+          research_found: [hess_v_kenmore]
+      - label: "Work with what you have"
+        target: ch2_draft_adequate
+
+  ch2_draft_strong:
+    act: outcome
+    text: |
+      You draft the impracticability section. Hess v. Kenmore
+      is your centerpiece, distinguishing Eastern Airlines on
+      the key factual point. The Restatement provides the
+      doctrinal foundation. The argument flows naturally.
+
+      You send it to Margaret at 6 AM.
+    dialogue:
+      - character: margaret
+        line: "This is sharp. The Hess distinction is exactly right."
+      - character: margaret
+        line: >
+          I'm going to use your draft almost as-is. Good work.
+    consequences:
+      relationship.margaret: 2
+      career.reputation: 3
+    choices:
+      - label: "Continue to the hearing"
+        target: ch2_hearing_strong
+
+  ch2_draft_adequate:
+    act: outcome
+    text: |
+      You draft the section with what you have. The argument
+      is competent — it correctly identifies the
+      impracticability doctrine and applies it to the facts.
+      But it lacks the knockout case that distinguishes
+      Eastern Airlines.
+
+      Margaret reads it the next morning.
+    dialogue:
+      - character: margaret
+        line: "It's solid research. But I think there's a stronger argument here."
+      - character: margaret
+        line: >
+          Let me rework this section. Your research is good
+          foundation — I just need to sharpen the framing.
+    consequences:
+      relationship.margaret: -1
+      career.reputation: 1
+    choices:
+      - label: "Continue to the hearing"
+        target: ch2_hearing_adequate_strong
+
+  ch2_hearing_strong:
+    act: outcome
+    text: |
+      The hearing on Pacific Rim's motion for summary judgment.
+      Margaret presents the argument — your argument. When she
+      reaches the Hess distinction, Judge Ward leans forward.
+    dialogue:
+      - character: judge_ward
+        line: >
+          Counsel, walk me through the Hess analysis. You're
+          saying the regulatory change here is more analogous
+          to Hess than to Eastern Airlines?
+      - character: margaret
+        line: >
+          Precisely, Your Honor. The new customs regulations
+          didn't just increase cost — they fundamentally
+          altered the nature of the freight forwarding
+          obligation.
+      - character: judge_ward
+        line: >
+          I find this persuasive. The motion for summary
+          judgment is denied. This case proceeds to trial.
+    consequences:
+      relationship.margaret: 1
+      flags.chapter_02_strong_win: true
+    choices:
+      - label: "Continue"
+        target: ch2_end_margaret_impressed
+
+  ch2_hearing_adequate_strong:
+    act: outcome
+    text: |
+      The hearing. Margaret presents the argument — she's
+      reworked your draft significantly, but the core
+      research is still yours. Judge Ward listens carefully.
+    dialogue:
+      - character: judge_ward
+        line: >
+          I'm going to take this under advisement. I want
+          to review the impracticability analysis more
+          carefully before ruling.
+    consequences:
+      flags.chapter_02_adequate: true
+    choices:
+      - label: "Continue"
+        target: ch2_end_margaret_neutral
+
+  # --- ADEQUATE PATH: JAMES'S CASE ---
+
+  ch2_james_assignment:
+    act: setup
+    text: |
+      Your phone rings. A number you don't recognize.
+    dialogue:
+      - character: james
+        line: >
+          This is James Okafor. I've got a case — landlord-tenant
+          dispute. Rivera v. Lakewood Properties. The tenant
+          moved out after six months of water damage. Landlord
+          says she abandoned the lease.
+      - character: james
+        line: >
+          She's claiming constructive eviction. I need you to
+          research the standard. What does she need to prove,
+          and can she prove it?
+      - character: james
+        line: >
+          You're the only associate on this. I need the research
+          by end of week.
+    choices:
+      - label: "Ask James for more details about the water damage"
+        target: ch2_james_details
+        consequences:
+          relationship.james: 1
+      - label: "Start researching constructive eviction"
+        target: ch2_adequate_research_start
+
+  ch2_james_details:
+    act: setup
+    text: |
+      James is matter-of-fact.
+    dialogue:
+      - character: james
+        line: >
+          Water leak in the ceiling. Started small, got worse.
+          She reported it four times over six months. Landlord
+          sent someone once — they patched it. Leak came back
+          two weeks later.
+      - character: james
+        line: >
+          Eventually water damaged the bedroom ceiling so badly
+          she moved her kid into the living room. Then she moved
+          out entirely. Landlord kept the security deposit.
+      - character: james
+        line: >
+          She wants the deposit back plus relocation costs.
+          Landlord says she broke the lease.
+    choices:
+      - label: "Begin your research"
+        target: ch2_adequate_research_start
+        consequences:
+          flags.got_details: true
+
+  ch2_adequate_research_start:
+    act: research
+    text: |
+      Constructive eviction. The tenant's argument is that the
+      landlord's failure to fix the water damage was so severe
+      that it effectively forced her out.
+
+      Where do you begin?
+    choices:
+      - label: "Look up the constructive eviction standard"
+        target: ch2_eviction_standard
+      - label: "Search for cases involving water damage and habitability"
+        target: ch2_habitability_search
+      - label: "Read the landlord's response first"
+        target: ch2_landlord_response
+
+  ch2_eviction_standard:
+    act: research
+    text: |
+      You find the foundational case quickly — Reste Realty
+      Corp. v. Cooper (1969). The standard is clear: constructive
+      eviction requires the landlord's substantial interference
+      with the tenant's use and enjoyment, and the tenant must
+      vacate within a reasonable time.
+
+      Rivera vacated after six months. Is that "reasonable"?
+    consequences:
+      research_found: [reste_realty_v_cooper]
+    choices:
+      - label: "Look for cases on what constitutes 'substantial interference'"
+        target: ch2_blackett_case
+        consequences:
+          research_found: [blackett_v_olanoff]
+      - label: "Look for an alternative legal theory"
+        target: ch2_habitability_angle
+
+  ch2_habitability_search:
+    act: research
+    text: |
+      You search for water damage cases. Several results come
+      up — most are straightforward habitability claims. But
+      you notice the case law splits between two doctrines:
+      constructive eviction and implied warranty of habitability.
+    choices:
+      - label: "Focus on constructive eviction — the stronger traditional claim"
+        target: ch2_eviction_standard
+      - label: "Look into the implied warranty angle — it might be easier to prove"
+        target: ch2_habitability_angle
+
+  ch2_landlord_response:
+    act: research
+    text: |
+      The landlord's response argues that Rivera's departure
+      was voluntary — she could have stayed. They claim the
+      leak was minor and that Rivera failed to mitigate by
+      not allowing further repair attempts.
+    dialogue:
+      - character: player
+        line: >
+          They're going to argue she left too easily. I need
+          to show the interference was substantial enough to
+          justify leaving.
+    consequences:
+      flags.read_landlord_response: true
+    choices:
+      - label: "Research the constructive eviction standard"
+        target: ch2_eviction_standard
+      - label: "Look for an alternative theory that doesn't require vacating"
+        target: ch2_habitability_angle
+
+  ch2_blackett_case:
+    act: research
+    text: |
+      Blackett v. Olanoff (1977). The court held that a
+      landlord is liable for conditions within their power
+      to control, even if they didn't directly cause the
+      problem. The failure to act — not just an affirmative
+      act — can constitute constructive eviction.
+
+      This helps Rivera. The landlord knew about the leak
+      and failed to adequately repair it. But you're still
+      not sure constructive eviction is the strongest theory.
+    conditions:
+      - if: "flags.read_landlord_response"
+        text_append: |
+          Having read the landlord's response, you can see
+          they'll argue Rivera should have given more time
+          for repairs. Blackett counters this — the landlord
+          had six months.
+    choices:
+      - label: "This is enough — build the argument around constructive eviction"
+        target: ch2_client_meeting_adequate
+        consequences:
+          flags.adequate_research: true
+      - label: "Look for an alternative theory — something stronger"
+        target: ch2_habitability_angle
+
+  ch2_habitability_angle:
+    act: research
+    text: |
+      You dig deeper and find something interesting. Some
+      jurisdictions have moved beyond constructive eviction
+      to recognize an implied warranty of habitability in
+      residential leases.
+    choices:
+      - label: "Read Wade v. Jobe (1991) — a binding case on implied warranty"
+        target: ch2_wade_discovery
+        consequences:
+          research_found: [wade_v_jobe]
+      - label: "Stick with constructive eviction — it's the safer argument"
+        target: ch2_client_meeting_adequate
+        consequences:
+          research_found: [reste_realty_v_cooper]
+          flags.adequate_research: true
+
+  ch2_wade_discovery:
+    act: research
+    text: |
+      Wade v. Jobe (1991). This changes everything.
+
+      The court recognized an implied warranty of habitability
+      independent of the constructive eviction doctrine. The
+      critical holding: a tenant does not need to vacate the
+      premises to assert a habitability claim.
+
+      For Rivera, this means she can recover damages whether
+      or not she was "right" to leave. The water damage itself
+      is the violation — not her response to it. This
+      neutralizes the landlord's strongest argument.
+    conditions:
+      - if: "research_found.chen_v_apex"
+        text_append: |
+          The instinct is becoming familiar — finding the
+          alternative theory that reframes the entire dispute.
+          Chen v. Apex taught you to look for the angle
+          everyone else missed.
+    consequences:
+      research_found: [wade_v_jobe]
+    choices:
+      - label: "Build your argument around Wade v. Jobe"
+        target: ch2_client_meeting_strong
+        consequences:
+          flags.strong_research: true
+
+  ch2_client_meeting_adequate:
+    act: outcome
+    text: |
+      You meet Maria Rivera in the conference room. She's
+      nervous — clutching her phone, checking the time.
+    dialogue:
+      - character: rivera_client
+        line: >
+          Is there a case? Can we win?
+      - character: player
+        line: >
+          We have a solid constructive eviction claim. The
+          landlord's failure to repair the water damage was
+          substantial interference with your use of the
+          apartment.
+      - character: rivera_client
+        line: >
+          But they'll say I should have stayed. That I
+          left too soon.
+      - character: player
+        line: >
+          We'll argue six months of documented complaints
+          was more than reasonable. We have a good position.
+    consequences:
+      relationship.james: 1
+    choices:
+      - label: "File the motion"
+        target: ch2_adequate_outcome
+
+  ch2_client_meeting_strong:
+    act: outcome
+    text: |
+      You meet Maria Rivera in the conference room. She's
+      nervous — clutching her phone, checking the time.
+    dialogue:
+      - character: rivera_client
+        line: >
+          Is there a case? Can we win?
+      - character: player
+        line: >
+          We have something better than I expected. There's
+          an implied warranty of habitability that applies
+          here. It means we don't even need to prove you
+          were right to leave.
+      - character: rivera_client
+        line: "What does that mean?"
+      - character: player
+        line: >
+          It means the water damage itself is the violation.
+          Whether you stayed or left, the landlord breached
+          their obligation. We can recover your deposit,
+          relocation costs, and potentially damages for the
+          months you lived with the leak.
+      - character: rivera_client
+        line: "Thank you. Really."
+    consequences:
+      relationship.james: 2
+      career.reputation: 2
+    choices:
+      - label: "File the motion"
+        target: ch2_strong_outcome_james
+
+  ch2_adequate_outcome:
+    act: outcome
+    text: |
+      The case settles two weeks later. The landlord agrees
+      to return the security deposit but not the relocation
+      costs. Maria is relieved but you can see the
+      disappointment.
+    dialogue:
+      - character: james
+        line: >
+          Settlement's a win. She got her money back. Not
+          everything, but something.
+    consequences:
+      career.reputation: 1
+      flags.chapter_02_adequate: true
+    choices:
+      - label: "Continue"
+        target: ch2_end_james_neutral
+
+  ch2_strong_outcome_james:
+    act: outcome
+    text: |
+      You file the motion with Wade v. Jobe as the
+      centerpiece. The landlord's attorney calls within
+      a week — they want to settle. The implied warranty
+      theory scared them.
+
+      Maria gets her full deposit back, relocation costs,
+      and three months of reduced rent for the period she
+      lived with the damage.
+    dialogue:
+      - character: james
+        line: >
+          Good result. The Wade theory was the right call.
+          Most associates would have stopped at constructive
+          eviction.
+      - character: rivera_client
+        line: "You changed things for me and my daughter. Thank you."
+    consequences:
+      career.reputation: 3
+      flags.chapter_02_strong_win: true
+    choices:
+      - label: "Continue"
+        target: ch2_end_james_impressed
+
+  # =========================================
+  # TERMINAL SCENES
+  # =========================================
+
+  ch2_end_margaret_impressed:
+    act: outcome
+    terminal: true
+    text: |
+      Two days later, Margaret stops by your office. She
+      closes the door — unusual for her.
+    dialogue:
+      - character: margaret
+        line: >
+          There's a case getting attention. Wrongful
+          termination — a transit worker fired for reporting
+          safety violations. Civil rights implications. The
+          press is interested.
+      - character: margaret
+        line: >
+          I want you on it. Not just research this time.
+    consequences:
+      flags.chapter_02_complete: true
+      flags.margaret_trust_strong: true
+
+  ch2_end_margaret_neutral:
+    act: outcome
+    terminal: true
+    text: |
+      The Thornton case moves slowly through the courts.
+      Margaret doesn't mention your draft again — not
+      negatively, just not at all. Business as usual.
+
+      A week later, an email from Margaret. A new matter —
+      but you're one of several associates cc'd.
+    consequences:
+      flags.chapter_02_complete: true
+      flags.margaret_trust_weak: true
+
+  ch2_end_james_impressed:
+    act: outcome
+    terminal: true
+    text: |
+      James finds you in the break room.
+    dialogue:
+      - character: james
+        line: >
+          I talked to Margaret Chen about you. She
+          mentioned your work on the Hartfield case.
+      - character: james
+        line: >
+          There's a wrongful termination case — transit worker,
+          civil rights angle. It's Margaret's lead, but she
+          needs another associate. I recommended you.
+    consequences:
+      flags.chapter_02_complete: true
+      flags.james_trust: true
+
+  ch2_end_james_neutral:
+    act: outcome
+    terminal: true
+    text: |
+      The Rivera case closes quietly. James sends a brief
+      email: "Good work on Rivera. Thanks." One line. That's
+      his style.
+
+      You go back to the rotation — whatever comes next.
+    consequences:
+      flags.chapter_02_complete: true
+      flags.james_neutral: true

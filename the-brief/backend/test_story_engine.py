@@ -28,7 +28,7 @@ class TestYAMLLoading:
     def test_manifest_loads(self, engine):
         assert engine.manifest is not None
         assert engine.manifest.title == "The Brief"
-        assert len(engine.manifest.chapters) == 1
+        assert len(engine.manifest.chapters) == 3
 
     def test_characters_load(self, engine):
         assert "margaret" in engine.characters
@@ -258,11 +258,11 @@ class TestFullPlaythrough:
         assert state.flags.get("chapter_01_complete") is True
         assert state.flags.get("margaret_trust") is True
 
-        # Terminal scene — no more choices
+        # Terminal scene — no more choices, but next chapter available
         scene = engine.resolve_scene(state)
         assert scene.choices is None
         assert scene.terminal is True
-        assert scene.has_next_chapter is False  # no chapter 2 yet
+        assert scene.has_next_chapter is True
 
 
 class TestTerminalScenes:
@@ -284,9 +284,118 @@ class TestTerminalScenes:
 
 
 class TestChapterTransition:
-    def test_no_next_chapter_with_single_chapter(self, engine, fresh_state):
-        fresh_state.flags["chapter_01_complete"] = True
+    def test_next_chapter_requires_unlock(self, engine, fresh_state):
+        """Can't advance to Ch2 without chapter_01_complete flag."""
         assert engine.get_next_chapter_id(fresh_state) is None
 
-    def test_advance_returns_none_with_no_next(self, engine, fresh_state):
+    def test_next_chapter_with_unlock(self, engine, fresh_state):
+        fresh_state.flags["chapter_01_complete"] = True
+        assert engine.get_next_chapter_id(fresh_state) == "chapter-02"
+
+    def test_advance_without_unlock(self, engine, fresh_state):
         assert engine.advance_chapter(fresh_state) is None
+
+    def test_advance_to_chapter_2(self, engine, fresh_state):
+        fresh_state.flags["chapter_01_complete"] = True
+        fresh_state.flags["margaret_trust"] = True
+        fresh_state.current_scene = "chapter_end_strong"
+        state = engine.advance_chapter(fresh_state)
+        assert state is not None
+        assert state.current_chapter == "chapter-02"
+        assert state.current_scene == "ch2_opening"
+        # State carries forward
+        assert state.flags["chapter_01_complete"] is True
+        assert state.flags["margaret_trust"] is True
+
+    def test_advance_ch2_to_ch3(self, engine):
+        state = GameState(
+            save_id="test",
+            current_chapter="chapter-02",
+            current_scene="ch2_end_margaret_impressed",
+            flags={"chapter_02_complete": True},
+        )
+        new_state = engine.advance_chapter(state)
+        assert new_state is not None
+        assert new_state.current_chapter == "chapter-03"
+
+    def test_no_chapter_after_ch3(self, engine):
+        state = GameState(
+            save_id="test",
+            current_chapter="chapter-03",
+            current_scene="ch3_aftermath_strong",
+            flags={"chapter_03_complete": True},
+        )
+        assert engine.get_next_chapter_id(state) is None
+
+    def test_ch2_strong_path_branch(self, engine):
+        """Margaret trust flag should show margaret assignment choice."""
+        state = GameState(
+            save_id="test",
+            current_chapter="chapter-02",
+            current_scene="ch2_opening",
+            flags={"margaret_trust": True},
+        )
+        scene = engine.resolve_scene(state)
+        assert "Margaret has been" in scene.text
+        # Should have the margaret assignment choice visible
+        assert scene.choices is not None
+        assert len(scene.choices) == 1
+
+    def test_ch2_adequate_path_branch(self, engine):
+        """Margaret neutral flag should show james assignment choice."""
+        state = GameState(
+            save_id="test",
+            current_chapter="chapter-02",
+            current_scene="ch2_opening",
+            flags={"margaret_neutral": True},
+        )
+        scene = engine.resolve_scene(state)
+        assert "picking up assignments" in scene.text
+        assert scene.choices is not None
+        assert len(scene.choices) == 1
+
+    def test_cross_chapter_research(self, engine):
+        """Research items from Ch1 should be available in Ch2."""
+        state = GameState(
+            save_id="test",
+            current_chapter="chapter-02",
+            current_scene="ch2_opening",
+            research_found=["chen_v_apex", "restatement_261"],
+        )
+        items = engine.get_research_items(state)
+        assert len(items) == 2
+        names = [i.name for i in items]
+        assert any("Chen v. Apex" in n for n in names)
+        assert any("Restatement" in n for n in names)
+
+    def test_ch3_rep_branching(self, engine):
+        """High reputation should give the lead role in Ch3."""
+        high_rep = GameState(
+            save_id="test",
+            current_chapter="chapter-03",
+            current_scene="ch3_opening",
+            career={"reputation": 5},
+        )
+        scene = engine.resolve_scene(high_rep)
+        assert "earned this" in scene.text
+
+        low_rep = GameState(
+            save_id="test",
+            current_chapter="chapter-03",
+            current_scene="ch3_opening",
+            career={"reputation": 1},
+        )
+        scene = engine.resolve_scene(low_rep)
+        assert "on the team" in scene.text
+
+    def test_all_chapter_targets_valid(self, engine):
+        """Every choice target must reference an existing scene (all chapters)."""
+        for ch_id, chapter in engine.chapters.items():
+            for scene_id, scene in chapter.scenes.items():
+                if scene.choices:
+                    for choice in scene.choices:
+                        assert choice.target in chapter.scenes, (
+                            f"Chapter '{ch_id}' scene '{scene_id}' choice "
+                            f"'{choice.label}' targets non-existent "
+                            f"scene '{choice.target}'"
+                        )
