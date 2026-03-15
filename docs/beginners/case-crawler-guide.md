@@ -32,10 +32,9 @@ The short version: players are junior associates who research legal issues under
 
 These technology choices are already made. Don't change them without discussing it first.
 
-- **Python + Flask** — The backend web framework. Flask is lightweight and well-documented, which makes it easy to build and modify quickly.
-- **HTMX** — A small library that makes web pages interactive by adding special attributes to regular HTML, so we avoid writing complex JavaScript.
+- **SvelteKit** — The frontend framework. It handles what the player sees and interacts with — search results, card animations, drag-and-drop, timers. It's fast and has built-in support for the smooth transitions and animations that make a game feel polished.
+- **Python + FastAPI** — The backend (server-side code). It stores your progress, serves up the case database, and handles anything that needs to persist between sessions. FastAPI is modern and well-documented.
 - **SQLite** — A database that lives in a single file in your project folder — no server to install or configure.
-- **Vanilla HTML/CSS** — Plain HTML and CSS for the frontend, no complex frameworks to learn or maintain.
 - **Docker** — Packages the whole application so anyone can run it with one command, regardless of what's on their computer.
 
 ---
@@ -75,13 +74,12 @@ Here's what the project looks like when it's set up:
 ```
 case-crawler/
   CLAUDE.md              -- this file (instructions for Claude Code)
-  app.py                 -- the main application (where the server runs)
-  models.py              -- data models (how cases, arguments, etc. are structured)
-  templates/             -- HTML page templates (what each page looks like)
-  static/                -- CSS stylesheets and images
-  data/                  -- game content: cases, statutes, scenarios (editable JSON/YAML)
+  frontend/              -- the SvelteKit app (what the player sees and interacts with)
+  backend/               -- the FastAPI server (saves progress, serves case data)
+    app.py               -- the main backend application
+    data/                -- game content: cases, statutes, scenarios (editable JSON/YAML)
+    requirements.txt     -- list of Python packages the backend needs
   tests/                 -- automated tests for game logic
-  requirements.txt       -- list of Python packages the project needs
   Dockerfile             -- instructions for packaging the app in Docker
   docker-compose.yml     -- configuration for running the app with Docker
 ```

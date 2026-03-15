@@ -30,10 +30,9 @@ See `docs/the-brief-concept.md` for the full concept document.
 
 These technology choices are already made. Don't switch to something else unless there's a specific, compelling reason and you've explained why.
 
-- **Python + Flask** — The backend (server-side code that runs the game). Flask is a simple, well-documented web framework that's good for small projects like this.
-- **HTMX** — Makes web pages interactive without writing much JavaScript. It works by adding special attributes to regular HTML elements, so the pages stay simple and readable.
+- **SvelteKit** — The frontend framework. It handles what the player sees — story text, choices, character portraits, transitions between scenes. It has built-in support for smooth animations that make the narrative feel cinematic.
+- **Python + FastAPI** — The backend (server-side code). It saves your progress, tracks your choices, and manages game state between sessions. FastAPI is modern and well-documented.
 - **SQLite** — The database. It's just a single file — no setup, no server, no accounts. It stores player progress, choices, and game state.
-- **Vanilla HTML/CSS** — The pages and styling. No complex frontend frameworks. Just standard web technologies that are easy to read and edit.
 - **Docker** — For deployment (getting the game running on a server). It packages everything together so the game runs anywhere with one command.
 
 ---
@@ -63,17 +62,17 @@ Here's what the project folder looks like. Each item in one sentence:
 ```
 the-brief/
   CLAUDE.md            -- This file. Instructions for Claude Code.
-  app.py               -- The main application that runs the game.
-  templates/           -- HTML page templates (what the player sees).
-  static/              -- CSS stylesheets and images.
-  story/               -- Story content, case data, and branching logic (this is where you write).
+  frontend/            -- The SvelteKit app (what the player sees — scenes, choices, transitions).
+  backend/             -- The FastAPI server (saves progress, tracks choices).
+    app.py             -- The main backend application.
+    story/             -- Story content, case data, and branching logic (this is where you write).
+    requirements.txt   -- List of Python packages the backend needs.
   tests/               -- Automated tests for game logic.
-  requirements.txt     -- List of Python packages the project needs.
   Dockerfile           -- Packages the app for deployment.
   docker-compose.yml   -- Runs the app with one command on any server.
 ```
 
-The `story/` folder is yours. That's where your cases, dialogue, characters, and branching paths live as data files you can read and edit.
+The `backend/story/` folder is yours. That's where your cases, dialogue, characters, and branching paths live as data files you can read and edit.
 
 ---
 
