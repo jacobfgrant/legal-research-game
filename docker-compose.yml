@@ -1,0 +1,45 @@
+services:
+  caddy:
+    image: caddy:2
+    ports:
+      - "8080:8080"  # Case Crawler
+      - "8081:8081"  # The Brief
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - case-crawler-frontend
+      - case-crawler-backend
+      - the-brief-frontend
+      - the-brief-backend
+
+  case-crawler-frontend:
+    build: ./case-crawler/frontend
+    expose:
+      - "3000"
+
+  case-crawler-backend:
+    build: ./case-crawler/backend
+    expose:
+      - "8000"
+    volumes:
+      - case-crawler-data:/app/data
+
+  the-brief-frontend:
+    build: ./the-brief/frontend
+    expose:
+      - "3000"
+
+  the-brief-backend:
+    build: ./the-brief/backend
+    expose:
+      - "8000"
+    volumes:
+      - the-brief-data:/app/data
+
+volumes:
+  caddy_data:
+  caddy_config:
+  case-crawler-data:
+  the-brief-data:

@@ -9,6 +9,8 @@ This is a monorepo containing two independent games and shared docs:
 ```
 legal-research-game/
   CLAUDE.md
+  Caddyfile                      -- reverse proxy config (shared)
+  docker-compose.yml             -- runs both games + Caddy
   docs/                          -- shared concept docs and beginner guides
     case-crawler-concept.md
     the-brief-concept.md
@@ -21,7 +23,7 @@ legal-research-game/
     backend/                     -- FastAPI server
 ```
 
-Each game is fully independent — its own frontend, backend, and data. They share nothing except docs and this CLAUDE.md. Either can be developed, tested, and deployed on its own.
+Each game is fully independent — its own frontend, backend, and data. They share nothing except docs, deployment infrastructure, and this CLAUDE.md. Either can be developed and tested on its own.
 
 ## Game Concepts
 
@@ -39,14 +41,22 @@ These are locked in — don't suggest alternatives unless there's a clear reason
 - **SvelteKit (Svelte 5)** — frontend framework with built-in transitions, animations, and reactive state management. Game logic lives primarily client-side.
 - **FastAPI** — backend API for game state persistence, serving legal research data, and auth. WebSocket support available for multiplayer later.
 - **SQLite** — database (just a file, no server). Sufficient for a small VPS with a handful of concurrent players.
-- **Docker** — deployment via `docker compose up`
-- **Caddy or nginx** — reverse proxy, both services on one VPS
+- **Docker** — deployment via `docker compose up` from the repo root
+- **Caddy** — reverse proxy. Routes to both games from one VPS.
+
+### Deployment
+
+The root `docker-compose.yml` runs both games and a shared Caddy reverse proxy:
+
+- **Local dev:** Case Crawler at `localhost:8080`, The Brief at `localhost:8081`
+- **Production:** Swap the port-based Caddyfile entries for subdomain-based routing (e.g., `casecrawler.yourdomain.com`). The commented example is in the Caddyfile.
 
 ### Architecture (per game)
 
-- SvelteKit frontend and FastAPI backend are separate services on the same VPS
+- SvelteKit frontend and FastAPI backend are separate services
 - Game logic lives client-side (single-player) — backend handles persistence and serves case/scenario data
 - Game content (cases, statutes, scenarios, story branches) stays in structured data files, loaded by the backend
+- Each game's backend data is persisted in a Docker volume
 
 ## Conventions
 

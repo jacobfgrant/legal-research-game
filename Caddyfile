@@ -1,0 +1,29 @@
+# Local development: access games at localhost:8080 and localhost:8081
+# For production, replace these blocks with your domain-based config:
+#
+#   casecrawler.yourdomain.com {
+#       handle /api/* {
+#           reverse_proxy case-crawler-backend:8000
+#       }
+#       handle {
+#           reverse_proxy case-crawler-frontend:3000
+#       }
+#   }
+
+:8080 {
+	handle /api/* {
+		reverse_proxy case-crawler-backend:8000
+	}
+	handle {
+		reverse_proxy case-crawler-frontend:3000
+	}
+}
+
+:8081 {
+	handle /api/* {
+		reverse_proxy the-brief-backend:8000
+	}
+	handle {
+		reverse_proxy the-brief-frontend:3000
+	}
+}
