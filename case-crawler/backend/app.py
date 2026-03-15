@@ -220,6 +220,7 @@ def get_scenario(scenario_id: str):
         "billable_hours": scenario["billable_hours"],
         "costs": scenario["costs"],
         "argument_slots": scenario["argument_slots"],
+        "search_hints": scenario.get("search_hints", []),
         "rulings": scenario["rulings"],
     }
 

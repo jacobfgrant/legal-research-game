@@ -10,8 +10,18 @@
     "client_name": "Sarah Reeves",
     "fact_pattern": "Your client, Sarah Reeves, worked as a senior data scientist at DataFlow Analytics for four years. When she was hired, she signed a non-compete agreement prohibiting her from working for any \"competing business\" within 50 miles for 18 months after leaving. Three months ago, she resigned and launched her own data consulting firm, Reeves Analytics, operating from the same city. DataFlow has filed suit to enforce the non-compete and is seeking a preliminary injunction to shut down her business.\n\nKey facts: Sarah had access to some client lists but no trade secrets or proprietary algorithms. Her new firm focuses on healthcare analytics — DataFlow works primarily in financial services. The 50-mile radius covers the entire metropolitan area, effectively preventing her from working in her field anywhere nearby. DataFlow has not lost any clients to Reeves Analytics.\n\nPartner Chen wants a memo arguing the non-compete is unenforceable.",
     "legal_issue": "Is the non-compete agreement enforceable against Sarah Reeves?",
-    "your_position": "The non-compete is unreasonably broad and unenforceable."
+    "your_position": "The non-compete is unreasonably broad and unenforceable.",
+    "research_tips": "Start by looking for the statute that governs non-compete agreements. Then search for cases about the specific issues in your fact pattern: the geographic scope, whether the industries actually compete, and whether there's been any actual harm."
   },
+  "search_hints": [
+    "non-compete",
+    "geographic scope",
+    "restrictive covenant",
+    "legitimate business interest",
+    "overbroad",
+    "trade secrets",
+    "competing business"
+  ],
   "billable_hours": 12.0,
   "costs": {
     "search": 0.5,

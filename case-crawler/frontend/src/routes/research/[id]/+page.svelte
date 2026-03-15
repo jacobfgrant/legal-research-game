@@ -129,6 +129,30 @@
 					<span class="search-cost">{state.scenario.costs.search} hrs</span>
 				</form>
 
+				{#if state.searchHistory.length === 0 && !hasResults}
+					<div class="search-guidance">
+						{#if state.scenario.assignment.research_tips}
+							<p class="research-tip">{state.scenario.assignment.research_tips}</p>
+						{/if}
+						{#if state.scenario.search_hints?.length > 0}
+							<div class="hint-section">
+								<span class="hint-label">Try searching for:</span>
+								<div class="hint-chips">
+									{#each state.scenario.search_hints as hint}
+										<button
+											class="hint-chip"
+											disabled={!state.canSearch}
+											onclick={() => { query = hint; }}
+										>
+											{hint}
+										</button>
+									{/each}
+								</div>
+							</div>
+						{/if}
+					</div>
+				{/if}
+
 				{#if state.hoursExpired}
 					<div class="hours-expired-notice">
 						<p>Time's up! Build your argument with what you've found.</p>
@@ -233,6 +257,54 @@
 </GameGuard>
 
 <style>
+	.search-guidance {
+		padding: 1rem;
+		border-bottom: 1px solid var(--color-text-dim);
+	}
+
+	.research-tip {
+		font-family: var(--font-ui);
+		font-size: 0.85rem;
+		color: var(--color-text-muted);
+		line-height: 1.5;
+		margin-bottom: 0.75rem;
+		font-style: italic;
+	}
+
+	.hint-section {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+	}
+
+	.hint-label {
+		font-family: var(--font-ui);
+		font-size: 0.8rem;
+		color: var(--color-text-dim);
+	}
+
+	.hint-chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3rem;
+	}
+
+	.hint-chip {
+		background: var(--color-surface-light);
+		border: 1px solid var(--color-text-dim);
+		color: var(--color-link);
+		font-family: var(--font-ui);
+		font-size: 0.8rem;
+		padding: 0.2rem 0.5rem;
+		border-radius: 3px;
+		cursor: pointer;
+	}
+
+	.hint-chip:hover:not(:disabled) {
+		border-color: var(--color-accent);
+		color: var(--color-accent);
+	}
+
 	.research-workspace {
 		display: grid;
 		grid-template-columns: 380px 1fr;
