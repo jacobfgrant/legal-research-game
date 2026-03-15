@@ -48,6 +48,9 @@ These are locked in — don't suggest alternatives unless there's a clear reason
 
 The root `docker-compose.yml` runs both games and a shared Caddy reverse proxy:
 
+- **Both games:** `docker compose --profile case-crawler --profile the-brief up`
+- **Just Case Crawler:** `docker compose --profile case-crawler up caddy case-crawler-frontend case-crawler-backend`
+- **Just The Brief:** `docker compose --profile the-brief up caddy the-brief-frontend the-brief-backend`
 - **Local dev:** Case Crawler at `localhost:8080`, The Brief at `localhost:8081`
 - **Production:** Swap the port-based Caddyfile entries for subdomain-based routing (e.g., `casecrawler.yourdomain.com`). The commented example is in the Caddyfile.
 

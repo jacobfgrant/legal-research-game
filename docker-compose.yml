@@ -8,16 +8,13 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
-    depends_on:
-      - case-crawler-frontend
-      - case-crawler-backend
-      - the-brief-frontend
-      - the-brief-backend
 
   case-crawler-frontend:
     build: ./case-crawler/frontend
     expose:
       - "3000"
+    profiles:
+      - case-crawler
 
   case-crawler-backend:
     build: ./case-crawler/backend
@@ -25,11 +22,15 @@ services:
       - "8000"
     volumes:
       - case-crawler-data:/app/data
+    profiles:
+      - case-crawler
 
   the-brief-frontend:
     build: ./the-brief/frontend
     expose:
       - "3000"
+    profiles:
+      - the-brief
 
   the-brief-backend:
     build: ./the-brief/backend
@@ -37,6 +38,8 @@ services:
       - "8000"
     volumes:
       - the-brief-data:/app/data
+    profiles:
+      - the-brief
 
 volumes:
   caddy_data:
