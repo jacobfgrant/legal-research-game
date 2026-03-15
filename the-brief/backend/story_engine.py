@@ -125,6 +125,12 @@ class StoryEngine:
                             name=char.name, title=char.title
                         )
 
+        # Check terminal status and next chapter availability
+        terminal = scene.terminal
+        has_next = False
+        if terminal:
+            has_next = self.get_next_chapter_id(state) is not None
+
         return ResolvedScene(
             id=scene.id,
             act=scene.act,
@@ -132,6 +138,8 @@ class StoryEngine:
             dialogue=dialogue,
             choices=resolved_choices,
             character_info=char_info,
+            terminal=terminal,
+            has_next_chapter=has_next,
         )
 
     def make_choice(self, state: GameState, choice_index: int) -> GameState:
@@ -171,15 +179,60 @@ class StoryEngine:
     def get_research_items(
         self, state: GameState
     ) -> list[ResearchItem]:
-        """Return research items the player has found."""
+        """Return research items the player has found across all chapters."""
+        items = []
+        seen = set()
+        for item_id in state.research_found:
+            if item_id in seen:
+                continue
+            for chapter in self.chapters.values():
+                if item_id in chapter.research_items:
+                    items.append(chapter.research_items[item_id])
+                    seen.add(item_id)
+                    break
+        return items
+
+    def is_terminal_scene(self, state: GameState) -> bool:
+        """Check if the current scene is a chapter-ending scene."""
         chapter = self.chapters.get(state.current_chapter)
         if not chapter:
-            return []
-        return [
-            chapter.research_items[item_id]
-            for item_id in state.research_found
-            if item_id in chapter.research_items
-        ]
+            return False
+        scene = chapter.scenes.get(state.current_scene)
+        if not scene:
+            return False
+        return scene.terminal
+
+    def get_next_chapter_id(self, state: GameState) -> str | None:
+        """Find the next unlocked chapter after the current one."""
+        if not self.manifest:
+            return None
+        current_found = False
+        for entry in self.manifest.chapters:
+            if entry.id == state.current_chapter:
+                current_found = True
+                continue
+            if current_found:
+                if entry.unlocked_by is None:
+                    return entry.id
+                if self._evaluate_condition(entry.unlocked_by, state):
+                    return entry.id
+        return None
+
+    def advance_chapter(self, state: GameState) -> GameState | None:
+        """Advance to the next chapter. Returns None if unavailable."""
+        next_id = self.get_next_chapter_id(state)
+        if not next_id:
+            return None
+        chapter = self.chapters.get(next_id)
+        if not chapter:
+            return None
+        state.current_chapter = next_id
+        state.current_scene = chapter.start_scene
+        # Apply start scene entry consequences
+        start_scene = chapter.scenes.get(chapter.start_scene)
+        if start_scene and start_scene.consequences:
+            self._apply_consequences(start_scene.consequences, state)
+        return state
 
     def _evaluate_condition(self, expr: str, state: GameState) -> bool:
         """Evaluate a simple condition expression against game state.

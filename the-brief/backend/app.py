@@ -134,6 +134,24 @@ async def make_choice(save_id: str, request: ChooseRequest) -> ResolvedScene:
     return new_scene
 
 
+@app.post("/api/game/{save_id}/advance")
+async def advance_chapter(save_id: str) -> ResolvedScene:
+    """Advance to the next chapter after completing the current one."""
+    state = db.load_game(save_id)
+    if not state:
+        raise HTTPException(status_code=404, detail="Save not found")
+    if not engine.is_terminal_scene(state):
+        raise HTTPException(status_code=400, detail="Current scene is not a chapter end")
+    state = engine.advance_chapter(state)
+    if not state:
+        raise HTTPException(status_code=400, detail="No next chapter available")
+    db.save_game(state)
+    scene = engine.resolve_scene(state)
+    if not scene:
+        raise HTTPException(status_code=500, detail="Could not resolve scene")
+    return scene
+
+
 @app.get("/api/game/{save_id}/research")
 async def get_research(save_id: str) -> list[ResearchItem]:
     """Get research items the player has found."""

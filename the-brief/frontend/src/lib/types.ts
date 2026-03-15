@@ -20,6 +20,8 @@ export interface ResolvedScene {
 	dialogue: DialogueLine[] | null;
 	choices: ResolvedChoice[] | null;
 	character_info: Record<string, CharacterInfo>;
+	terminal: boolean;
+	has_next_chapter: boolean;
 }
 
 export interface ResearchItem {

@@ -370,6 +370,7 @@ scenes:
 
   chapter_end_strong:
     act: outcome
+    terminal: true
     text: |
       Walking back to the office, Margaret turns to you.
     dialogue:
@@ -383,6 +384,7 @@ scenes:
 
   chapter_end_adequate:
     act: outcome
+    terminal: true
     text: |
       Back at the office, Margaret nods at you in the hallway but
       doesn't stop to talk. Your phone buzzes with a new assignment

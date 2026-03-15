@@ -36,6 +36,7 @@ class Scene(BaseModel):
     conditions: list[Condition] | None = None
     choices: list[Choice] | None = None
     consequences: dict[str, Any] | None = None
+    terminal: bool = False
 
 
 class ResearchItem(BaseModel):
@@ -116,6 +117,8 @@ class ResolvedScene(BaseModel):
     dialogue: list[DialogueLine] | None = None
     choices: list[ResolvedChoice] | None = None
     character_info: dict[str, CharacterInfo] = Field(default_factory=dict)
+    terminal: bool = False
+    has_next_chapter: bool = False
 
 
 class ResolvedChoice(BaseModel):

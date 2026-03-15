@@ -52,6 +52,10 @@ export async function deleteSave(saveId: string): Promise<void> {
 	await request(`/game/${saveId}`, { method: 'DELETE' });
 }
 
+export async function advanceChapter(saveId: string): Promise<ResolvedScene> {
+	return request(`/game/${saveId}/advance`, { method: 'POST' });
+}
+
 export async function listChapters(): Promise<ChapterSummary[]> {
 	return request('/chapters');
 }

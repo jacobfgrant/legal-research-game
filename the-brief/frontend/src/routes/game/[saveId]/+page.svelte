@@ -8,6 +8,7 @@
 		loadExistingGame,
 		chooseOption,
 		advanceDialogue,
+		continueToNextChapter,
 		toggleResearch,
 	} from '$lib/game.svelte';
 
@@ -134,15 +135,20 @@
 					{/if}
 
 					<!-- Chapter end -->
-					{#if !scene.choices && sceneState.dialogueIndex !== null}
+					{#if scene.terminal && sceneState.showChoices}
 						<div class="chapter-end" in:fade={{ delay: 600 }}>
 							<p class="end-text">End of Chapter</p>
-							<a href="/" class="btn-menu">Return to Menu</a>
-						</div>
-					{:else if !scene.choices && !scene.dialogue}
-						<div class="chapter-end" in:fade={{ delay: 600 }}>
-							<p class="end-text">End of Chapter</p>
-							<a href="/" class="btn-menu">Return to Menu</a>
+							{#if scene.has_next_chapter}
+								<button
+									class="btn-continue"
+									disabled={game.loading}
+									onclick={continueToNextChapter}
+								>
+									Continue
+								</button>
+							{:else}
+								<a href="/" class="btn-menu">Return to Menu</a>
+							{/if}
 						</div>
 					{/if}
 				</div>
@@ -360,6 +366,27 @@
 	.btn-menu:hover {
 		background: var(--color-accent-dim);
 		text-decoration: none;
+	}
+
+	.btn-continue {
+		display: inline-block;
+		font-family: var(--font-ui);
+		font-size: 1rem;
+		padding: 0.625rem 1.5rem;
+		background: var(--color-accent);
+		color: var(--color-bg);
+		border-radius: 4px;
+		font-weight: 600;
+		transition: background 0.2s;
+	}
+
+	.btn-continue:hover:not(:disabled) {
+		background: var(--color-accent-dim);
+	}
+
+	.btn-continue:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 
 	/* Research sidebar */

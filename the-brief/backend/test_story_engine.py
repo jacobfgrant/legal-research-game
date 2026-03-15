@@ -261,3 +261,32 @@ class TestFullPlaythrough:
         # Terminal scene — no more choices
         scene = engine.resolve_scene(state)
         assert scene.choices is None
+        assert scene.terminal is True
+        assert scene.has_next_chapter is False  # no chapter 2 yet
+
+
+class TestTerminalScenes:
+    def test_terminal_scene_detected(self, engine, fresh_state):
+        fresh_state.current_scene = "chapter_end_strong"
+        assert engine.is_terminal_scene(fresh_state)
+
+    def test_non_terminal_scene(self, engine, fresh_state):
+        assert not engine.is_terminal_scene(fresh_state)
+
+    def test_terminal_in_resolved_scene(self, engine, fresh_state):
+        fresh_state.current_scene = "chapter_end_strong"
+        scene = engine.resolve_scene(fresh_state)
+        assert scene.terminal is True
+
+    def test_non_terminal_in_resolved_scene(self, engine, fresh_state):
+        scene = engine.resolve_scene(fresh_state)
+        assert scene.terminal is False
+
+
+class TestChapterTransition:
+    def test_no_next_chapter_with_single_chapter(self, engine, fresh_state):
+        fresh_state.flags["chapter_01_complete"] = True
+        assert engine.get_next_chapter_id(fresh_state) is None
+
+    def test_advance_returns_none_with_no_next(self, engine, fresh_state):
+        assert engine.advance_chapter(fresh_state) is None

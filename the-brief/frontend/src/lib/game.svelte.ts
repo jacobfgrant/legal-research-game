@@ -104,6 +104,22 @@ export function advanceDialogue() {
 	}
 }
 
+export async function continueToNextChapter() {
+	if (!game.saveId) return;
+	game.loading = true;
+	game.error = null;
+	try {
+		const scene = await api.advanceChapter(game.saveId);
+		game.scene = scene;
+		game.research = await api.getResearch(game.saveId);
+		onSceneLoaded();
+	} catch (e) {
+		game.error = e instanceof Error ? e.message : 'Failed to advance chapter';
+	} finally {
+		game.loading = false;
+	}
+}
+
 export function toggleResearch() {
 	game.showResearch = !game.showResearch;
 }
