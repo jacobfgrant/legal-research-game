@@ -38,9 +38,17 @@
 		}
 	}
 
+	function isAlreadyCollected(id) {
+		return state.collectedAuthorities.some(a => a.id === id);
+	}
+
 	async function handleReadCase(caseId) {
 		if (loadingDetail) return;
-		if (!spendHours('read_case')) return;
+
+		// Re-reading a collected case is free
+		if (!isAlreadyCollected(caseId)) {
+			if (!spendHours('read_case')) return;
+		}
 
 		loadingDetail = true;
 		try {
@@ -64,7 +72,11 @@
 
 	async function handleReadStatute(statuteId) {
 		if (loadingDetail) return;
-		if (!spendHours('read_statute')) return;
+
+		// Re-reading a collected statute is free
+		if (!isAlreadyCollected(statuteId)) {
+			if (!spendHours('read_statute')) return;
+		}
 
 		loadingDetail = true;
 		try {

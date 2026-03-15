@@ -7,13 +7,17 @@
 
 	let loadingCitation = $state(null);
 
+	function isAlreadyCollected(id) {
+		return state.collectedAuthorities.some(a => a.id === id);
+	}
+
 	async function handleCitationClick(citedId) {
 		if (loadingCitation) return;
 
-		const isStatute = citedId.startsWith('statute_');
-		const costKey = 'follow_citation';
-
-		if (!spendHours(costKey)) return;
+		// Following a citation to something already collected is free
+		if (!isAlreadyCollected(citedId)) {
+			if (!spendHours('follow_citation')) return;
+		}
 
 		loadingCitation = citedId;
 		try {

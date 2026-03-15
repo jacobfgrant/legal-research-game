@@ -6,9 +6,15 @@
 	let state = $derived(getState());
 	let loadingCitation = $state(null);
 
+	function isAlreadyCollected(id) {
+		return state.collectedAuthorities.some(a => a.id === id);
+	}
+
 	async function handleCitedByClick(citedId) {
 		if (loadingCitation) return;
-		if (!spendHours('follow_citation')) return;
+		if (!isAlreadyCollected(citedId)) {
+			if (!spendHours('follow_citation')) return;
+		}
 
 		loadingCitation = citedId;
 		try {
